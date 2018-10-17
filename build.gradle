@@ -1,3 +1,11 @@
+apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = "Node"
+mainClassName = 'CLI'
+
+repositories {
+    mavenCentral()
+}
+dependencies {
+    compile 'info.picocli:picocli:3.6.1'
+}
