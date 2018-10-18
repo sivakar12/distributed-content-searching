@@ -12,9 +12,11 @@ public class BSSClient {
     private byte[] buffer = new byte[BUFFER_SIZE];
     private DatagramSocket socket;
 
-    public BSSClient() {}
+    public static BSSClient getInstance() {
+        return new BSSClient("localhost", 55555);
+    }
 
-    public BSSClient(String address, int port) {
+    private BSSClient(String address, int port) {
         this.address = address;
         this.port = port;
     }

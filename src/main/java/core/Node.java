@@ -14,6 +14,7 @@ public class Node {
         this.username = "team19";
         this.address = "localhost";
         this.port = port;
+        this.bssClient = BSSClient.getInstance();
     }
     public Node(String address, int port) {
         this.address = address;
@@ -34,11 +35,9 @@ public class Node {
     }
     public static void main(String[] args) {
         Node node = new Node(88888);
-        node.setBSSClient(new BSSClient("localhost", 55555));
         node.registerToBSServer();
         
-        Node node2 = new Node(88888);
-        node2.setBSSClient(new BSSClient("localhost", 55555));
+        Node node2 = new Node(88889);
         node2.registerToBSServer();
         node.unregisterFromBSServer();
         node2.unregisterFromBSServer();
