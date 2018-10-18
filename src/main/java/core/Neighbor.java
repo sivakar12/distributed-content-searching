@@ -6,4 +6,8 @@ public class Neighbor {
         this.address = address;
         this.port = port;
     }
+    @Override
+    public String toString() {
+        return this.address + ":" + this.port;
+    }
 }

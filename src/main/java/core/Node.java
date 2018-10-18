@@ -25,8 +25,8 @@ public class Node {
     }
 
     public void registerToBSServer() {
-        String response = this.bssClient.register(this.address, this.port, this.username);
-        System.out.println(response);
+        this.neigibors = this.bssClient.register(this.address, this.port, this.username);
+        System.out.println(this.neigibors);
     }
 
     public void unregisterFromBSServer() {

@@ -1,3 +1,6 @@
+import java.util.List;
+import java.util.ArrayList;
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -28,6 +31,7 @@ public class BSSClient {
     }
 
     private String sendMessage(String message, String address, int port) {
+        message = addLength(message);
         try {
             DatagramSocket socket = new DatagramSocket();
             byte[] messageBytes = message.getBytes();
@@ -47,17 +51,23 @@ public class BSSClient {
         }
     }
 
-    public String register(String address, int port, String username) {
+    public List<Neighbor> register(String address, int port, String username) {
         String message = String.format("REG %s %d %s", 
             address, port, username);
-        message = addLength(message);
-        return sendMessage(message, this.address, this.port);
+        String response = sendMessage(message, this.address, this.port);
+        String[] tokens = response.split(" ");
+
+        List<Neighbor> neighbors = new ArrayList<Neighbor>();
+        for (int i = 3; i < tokens.length; i+=2) {
+            Neighbor newNeighbor = new Neighbor(tokens[i], Integer.parseInt(tokens[i+1]));
+            neighbors.add(newNeighbor);
+        }
+        return neighbors;
     }
 
     public String unregister(String address, int port, String username) {
         String message = String.format("UNREG %s %d %s",
             address, port, username);
-        message = addLength(message);
         return sendMessage(message, this.address, this.port);
     }
 
