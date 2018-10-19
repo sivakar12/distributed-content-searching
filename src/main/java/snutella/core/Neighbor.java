@@ -1,3 +1,5 @@
+package snutella.core;
+
 public class Neighbor {
     public String address;
     public int port;

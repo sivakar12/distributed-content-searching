@@ -1,3 +1,5 @@
+package snutella.core;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -65,10 +67,15 @@ public class BSSClient {
         return neighbors;
     }
 
-    public String unregister(String address, int port, String username) {
+    public boolean unregister(String address, int port, String username) {
         String message = String.format("UNREG %s %d %s",
             address, port, username);
-        return sendMessage(message, this.address, this.port);
+        String response = sendMessage(message, this.address, this.port);
+        if (response.equals("ERROR!")) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     // public void join(String address, int port)

@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = 'CLI'
+mainClassName = 'snutella.CLI'
 
 repositories {
     mavenCentral()

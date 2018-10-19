@@ -1,8 +1,11 @@
+package snutella.core; 
+
 import java.util.List;
 import java.util.ArrayList;
 
 
 public class Node {
+    
     private String username;
     private int port;
     private String address;
@@ -10,15 +13,12 @@ public class Node {
     private List<Neighbor> neigibors;
     private BSSClient bssClient;
 
-    public Node(int port) {
+    public Node(String address, int port) {
         this.username = "team19";
         this.address = "localhost";
         this.port = port;
         this.bssClient = BSSClient.getInstance();
-    }
-    public Node(String address, int port) {
-        this.address = address;
-        this.port = port;
+        this.listenForMessages();
     }
     public void setBSSClient(BSSClient client) {
         this.bssClient = client;
@@ -30,16 +30,15 @@ public class Node {
     }
 
     public void unregisterFromBSServer() {
-        String response = this.bssClient.unregister(this.address, this.port, this.username);
+        boolean response = this.bssClient.unregister(this.address, this.port, this.username);
         System.out.println(response);
     }
-    public static void main(String[] args) {
-        Node node = new Node(88888);
-        node.registerToBSServer();
-        
-        Node node2 = new Node(88889);
-        node2.registerToBSServer();
-        node.unregisterFromBSServer();
-        node2.unregisterFromBSServer();
+
+    public void listenForMessages() {
+        try {
+            Thread thread = new MessageHandler(this.address, this.port);
+        } catch (Exception e) {
+            System.err.println(e);  
+        }
     }
 }
