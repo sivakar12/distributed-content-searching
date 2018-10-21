@@ -77,6 +77,4 @@ public class BSSClient {
             return true;
         }
     }
-
-    // public void join(String address, int port)
 }

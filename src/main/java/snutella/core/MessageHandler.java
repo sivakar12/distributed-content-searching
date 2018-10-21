@@ -6,24 +6,15 @@ import java.net.InetAddress;
 
 public class MessageHandler extends Thread {
     private static final int BUFFER_SIZE = 1024;
-    
-    private String address;
-    private int port;
-
     private byte[] buffer;
+    
     private DatagramSocket socket;
 
-    public MessageHandler(String address, int port) {
-        this.address = address;
-        this.port = port;
-
+    public MessageHandler(DatagramSocket socket) {
+        this.socket = socket;
         this.buffer = new byte[BUFFER_SIZE];
-        try {
-            this.socket = new DatagramSocket(this.port, InetAddress.getByName(this.address));        
-        } catch (Exception e) {
-            System.err.println(e);
-        }
     }
+    
     public void run()  {
         try {
             this.listenForMessages();
@@ -36,7 +27,7 @@ public class MessageHandler extends Thread {
         while (true) {
             socket.receive(packet);
             String response = new String(packet.getData(), 0, packet.getLength());
-            System.out.println(response);
+            System.out.println("Message received: " + response);
         }
     }
 }
