@@ -12,7 +12,7 @@ public class Node {
     private int port;
     private String address;
 
-    private List<Neighbor> neigibors;
+    private List<Neighbor> neighbors;
     private BSSClient bssClient;
 
     private DatagramSocket socket;
@@ -38,8 +38,9 @@ public class Node {
     }
 
     public void registerToBSServer() {
-        this.neigibors = this.bssClient.register(this.address, this.port, this.username);
-        System.out.println(this.neigibors);
+        this.neighbors = this.bssClient.register(this.address, this.port, this.username);
+        System.out.println("Neighbors: " + this.neighbors);
+
     }
 
     public void unregisterFromBSServer() {
@@ -49,7 +50,7 @@ public class Node {
 
     public void listenForMessages() {
         try {
-            Thread thread = new MessageHandler(this.socket);
+            Thread thread = new MessageHandler(this.socket, this.neighbors);
             thread.start();
         } catch (Exception e) {
             System.err.println(e);  
@@ -57,7 +58,7 @@ public class Node {
     }
     public void sendPings() {
         try {
-            Thread thread = new PingSender(this.socket, this.neigibors);
+            Thread thread = new PingSender(this.socket, this.neighbors);
             thread.start();
         } catch (Exception e) {
             System.err.println(e);
