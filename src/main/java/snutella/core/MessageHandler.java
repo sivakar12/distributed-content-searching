@@ -38,7 +38,7 @@ public class MessageHandler extends Thread {
         while (true) {
             socket.receive(packet);
             String response = new String(packet.getData(), 0, packet.getLength());
-            if (response.equals(Message.ping())) {
+            if (response.startsWith("PING")) {           // TODO: Remove hardcoded string
                 handlePing(packet);
             }
             System.out.println("Message received: " + response);

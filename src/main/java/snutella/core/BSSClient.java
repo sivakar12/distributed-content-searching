@@ -11,8 +11,8 @@ public class BSSClient {
 
     private final int BUFFER_SIZE = 1024;
     private final int TIMEOUT = 2000;
-    private String address = "localhost";
-    private int port = 55555;
+    private InetAddress address;
+    private int port;
 
     private byte[] buffer = new byte[BUFFER_SIZE];
     private DatagramSocket socket;
@@ -22,7 +22,11 @@ public class BSSClient {
     }
 
     private BSSClient(String address, int port) {
-        this.address = address;
+        try {
+            this.address = InetAddress.getByName(address);
+        } catch (Exception e) {
+            System.err.println(e);
+        }
         this.port = port;
     }
 
@@ -32,14 +36,13 @@ public class BSSClient {
         return paddedLength + " " + message;
     }
 
-    private String sendMessage(String message, String address, int port) {
+    private String sendMessage(String message, InetAddress address, int port) {
         message = addLength(message);
         try {
             DatagramSocket socket = new DatagramSocket();
             byte[] messageBytes = message.getBytes();
-            InetAddress inetAddress = InetAddress.getByName(address);
             DatagramPacket packet = new DatagramPacket(messageBytes, 
-                messageBytes.length, inetAddress, port);
+                messageBytes.length, address, port);
             socket.send(packet);
             packet = new DatagramPacket(buffer, buffer.length);
             socket.setSoTimeout(TIMEOUT);
@@ -53,23 +56,28 @@ public class BSSClient {
         }
     }
 
-    public List<Neighbor> register(String address, int port, String username) {
+    public List<Neighbor> register(InetAddress address, int port, String username) {
         String message = String.format("REG %s %d %s", 
-            address, port, username);
+            address.getHostAddress(), port, username);
         String response = sendMessage(message, this.address, this.port);
         String[] tokens = response.split(" ");
 
         List<Neighbor> neighbors = new ArrayList<Neighbor>();
         for (int i = 3; i < tokens.length; i+=2) {
-            Neighbor newNeighbor = new Neighbor(tokens[i], Integer.parseInt(tokens[i+1]));
-            neighbors.add(newNeighbor);
+            try {
+                Neighbor newNeighbor = new Neighbor(InetAddress.getByName(tokens[i]), 
+                    Integer.parseInt(tokens[i+1]));
+                neighbors.add(newNeighbor);
+            } catch (Exception e) {
+                System.err.println(e);
+            }
         }
         return neighbors;
     }
 
-    public boolean unregister(String address, int port, String username) {
+    public boolean unregister(InetAddress address, int port, String username) {
         String message = String.format("UNREG %s %d %s",
-            address, port, username);
+            address.getHostAddress(), port, username);
         String response = sendMessage(message, this.address, this.port);
         if (response.equals("ERROR!")) {
             return false;

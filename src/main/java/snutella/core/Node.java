@@ -10,7 +10,7 @@ public class Node {
     
     private String username;
     private int port;
-    private String address;
+    private InetAddress address;
 
     private List<Neighbor> neighbors;
     private BSSClient bssClient;
@@ -19,11 +19,15 @@ public class Node {
 
     public Node(String address, int port) {
         this.username = "team19";
-        this.address = "localhost";
+        try {
+            this.address = InetAddress.getByName(address);
+        } catch (Exception e) {
+            System.err.println(e);
+        }
         this.port = port;
 
         try {
-            this.socket = new DatagramSocket(this.port, InetAddress.getByName(this.address));
+            this.socket = new DatagramSocket(this.port, this.address);
         } catch (Exception e) {
             System.err.println(e);
         }

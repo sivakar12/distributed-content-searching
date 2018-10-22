@@ -1,21 +1,22 @@
 package snutella.core;
 
 import java.util.Date;
+import java.net.InetAddress;
 
 public class Neighbor {
-    private String address;
+    private InetAddress address;
     private int port;
     private Date lastPing;
     private boolean isConnected;
 
-    public Neighbor(String address, int port) {
+    public Neighbor(InetAddress address, int port) {
         this.address = address;
         this.port = port;
         this.lastPing = new Date();
         this.isConnected = true;
     }
 
-    public String getAddress() {
+    public InetAddress getAddress() {
         return this.address;
     }
     public int getPort() {
@@ -39,6 +40,6 @@ public class Neighbor {
     
     @Override
     public String toString() {
-        return this.address + ":" + this.port;
+        return this.address.getHostAddress() + ":" + this.port;
     }
 }

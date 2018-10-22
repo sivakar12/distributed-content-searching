@@ -8,11 +8,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import snutella.core.Neighbor;
-import snutella.core.Message;
+import snutella.core.Ping;
 
 public class PingSender extends Thread {
     private static final int DELAY = 5000;
     private static final int PERIOD = 5000;
+    private static final int DEFAULT_TTL = 5;
 
     private DatagramSocket socket;
     private List<Neighbor> peers;
@@ -34,16 +35,20 @@ public class PingSender extends Thread {
     }
     private void sendPing(Neighbor neighbor) {
         try {
-            String message = Message.ping();
-            byte[] messageBytes = message.getBytes();
-            InetAddress address = InetAddress.getByName(neighbor.getAddress());
+            System.out.println("Addr: " + this.socket.getLocalAddress());
+            System.out.println("POrt: " + this.socket.getLocalPort());
+            Ping ping = new Ping(this.socket.getLocalAddress(), 
+                this.socket.getLocalPort(), DEFAULT_TTL);
+            byte[] messageBytes = ping.toString().getBytes();
+            InetAddress address = neighbor.getAddress();
             int port = neighbor.getPort();
             DatagramPacket packet = new DatagramPacket(
                 messageBytes, messageBytes.length, address, port);
             socket.send(packet);
             System.out.println("Sent ping to " + port);
         } catch (Exception e) {
-            System.err.println(e);
+            System.out.println("error here");
+            e.printStackTrace();
         }
     }
 
