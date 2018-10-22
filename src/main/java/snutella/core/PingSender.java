@@ -15,20 +15,21 @@ public class PingSender extends Thread {
     private static final int PERIOD = 5000;
 
     private DatagramSocket socket;
-    private List<Neighbor> connectedPeers;
+    private List<Neighbor> peers;
 
-    public PingSender(DatagramSocket socket, List<Neighbor> connectedPeers) {
+    public PingSender(DatagramSocket socket, List<Neighbor> peers) {
         this.socket = socket;
-        this.connectedPeers = connectedPeers;
+        this.peers = peers;
     }
 
-    public void changeConnectedPeers(List<Neighbor> connectedPeers) {
-        this.connectedPeers = connectedPeers;
+    public void changePeers(List<Neighbor> peers) {
+        this.peers = peers;
     }
 
-    private void sendPingToAll() {
-        for (Neighbor peer: connectedPeers) {
-            this.sendPing(peer);
+    private void sendPingToConnectedPeers() {
+        for (Neighbor peer: peers) {
+            if (peer.getIsConnected())
+                this.sendPing(peer);
         }
     }
     private void sendPing(Neighbor neighbor) {
@@ -51,7 +52,7 @@ public class PingSender extends Thread {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                sendPingToAll();
+                sendPingToConnectedPeers();
             }
         }, DELAY, PERIOD);
     }

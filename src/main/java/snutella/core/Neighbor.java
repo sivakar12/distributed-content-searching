@@ -1,12 +1,18 @@
 package snutella.core;
 
+import java.util.Date;
+
 public class Neighbor {
     private String address;
     private int port;
-    
+    private Date lastPing;
+    private boolean isConnected;
+
     public Neighbor(String address, int port) {
         this.address = address;
         this.port = port;
+        this.lastPing = new Date();
+        this.isConnected = true;
     }
 
     public String getAddress() {
@@ -14,6 +20,21 @@ public class Neighbor {
     }
     public int getPort() {
         return this.port;
+    }
+
+    public void setLastPing(Date date) {
+        this.lastPing = date;
+    }
+    public Date getLastPing() {
+        return this.lastPing;
+    }
+
+    public void setIsConnected(boolean isConnected) {
+        this.isConnected = isConnected;
+    }
+
+    public boolean getIsConnected() {
+        return this.isConnected;
     }
     
     @Override

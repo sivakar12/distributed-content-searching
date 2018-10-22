@@ -21,7 +21,6 @@ public class CLI implements Runnable {
     ) {
         if (address == null) address = "localhost";
         Node node = new Node(address, port);
-        node.registerToBSServer();
     }
 
     @Command(name="list-neighbors", description="Give a list of neighbors")
