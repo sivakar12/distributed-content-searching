@@ -1,4 +1,4 @@
-package snutella.core;
+package snutella;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -17,16 +17,9 @@ public class BSSClient {
     private byte[] buffer = new byte[BUFFER_SIZE];
     private DatagramSocket socket;
 
-    public static BSSClient getInstance() {
-        return new BSSClient("localhost", 55555);
-    }
 
-    private BSSClient(String address, int port) {
-        try {
-            this.address = InetAddress.getByName(address);
-        } catch (Exception e) {
-            System.err.println(e);
-        }
+    public BSSClient(String address, int port) throws Exception {
+        this.address = InetAddress.getByName(address);
         this.port = port;
     }
 
@@ -36,27 +29,24 @@ public class BSSClient {
         return paddedLength + " " + message;
     }
 
-    private String sendMessage(String message, InetAddress address, int port) {
+    private String sendMessage(String message, InetAddress address, int port)
+            throws Exception {
         message = addLength(message);
-        try {
-            DatagramSocket socket = new DatagramSocket();
-            byte[] messageBytes = message.getBytes();
-            DatagramPacket packet = new DatagramPacket(messageBytes, 
-                messageBytes.length, address, port);
-            socket.send(packet);
-            packet = new DatagramPacket(buffer, buffer.length);
-            socket.setSoTimeout(TIMEOUT);
-            socket.receive(packet);
-            String received = new String(packet.getData(), 0, packet.getLength());
-            socket.close();
-            return received;
-        } catch (Exception e) {
-            System.err.println("Error: " + e);
-            return "ERROR!";
-        }
+        DatagramSocket socket = new DatagramSocket();
+        byte[] messageBytes = message.getBytes();
+        DatagramPacket packet = new DatagramPacket(messageBytes,
+            messageBytes.length, address, port);
+        socket.send(packet);
+        packet = new DatagramPacket(buffer, buffer.length);
+        socket.setSoTimeout(TIMEOUT);
+        socket.receive(packet);
+        String received = new String(packet.getData(), 0, packet.getLength());
+        socket.close();
+        return received;
     }
 
-    public List<Neighbor> register(InetAddress address, int port, String username) {
+    public List<Neighbor> register(InetAddress address, int port,
+                                   String username) throws Exception {
         String message = String.format("REG %s %d %s", 
             address.getHostAddress(), port, username);
         String response = sendMessage(message, this.address, this.port);
@@ -75,14 +65,11 @@ public class BSSClient {
         return neighbors;
     }
 
-    public boolean unregister(InetAddress address, int port, String username) {
+    public void unregister(InetAddress address, int port, String username)
+            throws Exception{
         String message = String.format("UNREG %s %d %s",
             address.getHostAddress(), port, username);
-        String response = sendMessage(message, this.address, this.port);
-        if (response.equals("ERROR!")) {
-            return false;
-        } else {
-            return true;
-        }
+        sendMessage(message, this.address, this.port);
+
     }
 }

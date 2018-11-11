@@ -1,12 +1,10 @@
-package snutella.core;
+package snutella;
 
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.util.Date;
 import java.util.List;
 
-import snutella.core.Neighbor;
 public class MessageHandler extends Thread {
     private static final int BUFFER_SIZE = 1024;
     private byte[] buffer;

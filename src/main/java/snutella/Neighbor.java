@@ -1,4 +1,4 @@
-package snutella.core;
+package snutella;
 
 import java.util.Date;
 import java.net.InetAddress;

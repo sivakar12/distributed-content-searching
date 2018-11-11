@@ -1,4 +1,4 @@
-package snutella.core;
+package snutella;
 
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
@@ -6,9 +6,6 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import snutella.core.Neighbor;
-import snutella.core.Ping;
 
 public class PingSender extends Thread {
     private static final int DELAY = 5000;
@@ -37,13 +34,16 @@ public class PingSender extends Thread {
         try {
             System.out.println("Addr: " + this.socket.getLocalAddress());
             System.out.println("POrt: " + this.socket.getLocalPort());
-            Ping ping = new Ping(this.socket.getLocalAddress(), 
-                this.socket.getLocalPort(), DEFAULT_TTL);
-            byte[] messageBytes = ping.toString().getBytes();
+
             InetAddress address = neighbor.getAddress();
             int port = neighbor.getPort();
+
+            Ping ping = new Ping(this.socket.getLocalAddress(),
+                this.socket.getLocalPort(), DEFAULT_TTL);
+            byte[] messageBytes = ping.toString().getBytes();
             DatagramPacket packet = new DatagramPacket(
                 messageBytes, messageBytes.length, address, port);
+
             socket.send(packet);
             System.out.println("Sent ping to " + port);
         } catch (Exception e) {

@@ -1,10 +1,10 @@
-package snutella.core; 
+package snutella;
 
 import java.util.List;
-import java.util.ArrayList;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.concurrent.ExecutionException;
 
 public class Node {
     
@@ -17,12 +17,13 @@ public class Node {
 
     private DatagramSocket socket;
 
-    public Node(String address, int port) {
+    public Node(String address, int port, String bssAddress, int bssPort) {
         this.username = "team19";
         try {
             this.address = InetAddress.getByName(address);
         } catch (Exception e) {
             System.err.println(e);
+            return;
         }
         this.port = port;
 
@@ -30,10 +31,23 @@ public class Node {
             this.socket = new DatagramSocket(this.port, this.address);
         } catch (Exception e) {
             System.err.println(e);
+            return;
         }
 
-        this.bssClient = BSSClient.getInstance();
-        this.registerToBSServer();
+        try {
+            this.bssClient = new BSSClient(bssAddress, bssPort);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        try {
+            this.registerToBSServer();
+        } catch (Exception e) {
+            System.err.println("Error registering with Bootstrap server");
+            e.printStackTrace();
+            return;
+
+        }
         this.listenForMessages();
         this.sendPings();
     }
@@ -41,15 +55,13 @@ public class Node {
         this.bssClient = client;
     }
 
-    public void registerToBSServer() {
+    public void registerToBSServer() throws Exception {
         this.neighbors = this.bssClient.register(this.address, this.port, this.username);
         System.out.println("Neighbors: " + this.neighbors);
-
     }
 
-    public void unregisterFromBSServer() {
-        boolean response = this.bssClient.unregister(this.address, this.port, this.username);
-        System.out.println(response);
+    public void unregisterFromBSServer() throws Exception {
+        this.bssClient.unregister(this.address, this.port, this.username);
     }
 
     public void listenForMessages() {
@@ -57,7 +69,8 @@ public class Node {
             Thread thread = new MessageHandler(this.socket, this.neighbors);
             thread.start();
         } catch (Exception e) {
-            System.err.println(e);  
+            System.err.println(e);
+            return;
         }
     }
     public void sendPings() {
@@ -66,6 +79,26 @@ public class Node {
             thread.start();
         } catch (Exception e) {
             System.err.println(e);
+            return;
         }
+    }
+    @Override
+    public void finalize() {
+        this.socket.disconnect();
+    }
+
+    public static void main(String[] args) {
+        if (args.length != 4) {
+            System.err.println("Input IP address and port number correctly");
+            return;
+        }
+
+        String ipAddress = args[0];
+        int port = Integer.parseInt(args[1]);
+        String bssAddress = args[2];
+        int bssPort = Integer.parseInt((args[3]));
+
+        new Node(ipAddress, port, bssAddress, bssPort);
+
     }
 }
