@@ -32,9 +32,6 @@ public class PingSender extends Thread {
     }
     private void sendPing(Neighbor neighbor) {
         try {
-            System.out.println("Addr: " + this.socket.getLocalAddress());
-            System.out.println("POrt: " + this.socket.getLocalPort());
-
             InetAddress address = neighbor.getAddress();
             int port = neighbor.getPort();
 
@@ -47,7 +44,6 @@ public class PingSender extends Thread {
             socket.send(packet);
             System.out.println("Sent ping to " + port);
         } catch (Exception e) {
-            System.out.println("error here");
             e.printStackTrace();
         }
     }

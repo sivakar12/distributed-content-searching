@@ -1,3 +1,5 @@
+package bsserver;
+
 class Neighbour{
 	private String ip;
 	private int port;

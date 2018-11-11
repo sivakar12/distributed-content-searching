@@ -39,7 +39,6 @@ public class MessageHandler extends Thread {
             if (response.startsWith("PING")) {           // TODO: Remove hardcoded string
                 handlePing(packet);
             }
-            System.out.println("Message received: " + response);
         }
     }
 }
