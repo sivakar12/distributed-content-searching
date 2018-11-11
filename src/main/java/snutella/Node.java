@@ -1,34 +1,31 @@
 package snutella;
 
+import java.net.UnknownHostException;
 import java.util.List;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.concurrent.ExecutionException;
 
 public class Node {
-    
+    private DatagramSocket socket;
+
     private String username;
-    private int port;
-    private InetAddress address;
 
     private List<Neighbor> neighbors;
     private BSSClient bssClient;
 
-    private DatagramSocket socket;
-
     public Node(String address, int port, String bssAddress, int bssPort) {
         this.username = "team19";
+
+        InetAddress inetAddress;
         try {
-            this.address = InetAddress.getByName(address);
-        } catch (Exception e) {
-            System.err.println(e);
+            inetAddress = InetAddress.getByName(address);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
             return;
         }
-        this.port = port;
-
         try {
-            this.socket = new DatagramSocket(this.port, this.address);
+            this.socket = new DatagramSocket(port, inetAddress);
         } catch (Exception e) {
             System.err.println(e);
             return;
@@ -51,17 +48,22 @@ public class Node {
         this.listenForMessages();
         this.sendPings();
     }
-    public void setBSSClient(BSSClient client) {
-        this.bssClient = client;
+
+    public InetAddress getAddress() {
+        return this.socket.getLocalAddress();
+    }
+    public int getPort() {
+        return this.socket.getLocalPort();
     }
 
     public void registerToBSServer() throws Exception {
-        this.neighbors = this.bssClient.register(this.address, this.port, this.username);
+
+        this.neighbors = this.bssClient.register(this.getAddress(), this.getPort(), this.username);
         System.out.println("Neighbors: " + this.neighbors);
     }
 
     public void unregisterFromBSServer() throws Exception {
-        this.bssClient.unregister(this.address, this.port, this.username);
+        this.bssClient.unregister(this.getAddress(), this.getPort(), this.username);
     }
 
     public void listenForMessages() {
@@ -89,16 +91,15 @@ public class Node {
 
     public static void main(String[] args) {
         if (args.length != 4) {
-            System.err.println("Input IP address and port number correctly");
+            System.err.println("Input port, and bootstrap sever config correctly");
             return;
         }
-
-        String ipAddress = args[0];
+        String address = args[0];
         int port = Integer.parseInt(args[1]);
         String bssAddress = args[2];
         int bssPort = Integer.parseInt((args[3]));
 
-        new Node(ipAddress, port, bssAddress, bssPort);
+        new Node(address, port, bssAddress, bssPort);
 
     }
 }

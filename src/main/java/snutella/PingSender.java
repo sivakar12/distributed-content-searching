@@ -42,7 +42,7 @@ public class PingSender extends Thread {
                 messageBytes, messageBytes.length, address, port);
 
             socket.send(packet);
-            System.out.println("Sent ping to " + port);
+            System.out.println("Sent ping to " + address.toString() + ":" + port);
         } catch (Exception e) {
             e.printStackTrace();
         }

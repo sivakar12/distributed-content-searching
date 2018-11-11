@@ -1,6 +1,9 @@
 package snutella;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Ping {
     private InetAddress sourceAddress;
@@ -22,14 +25,29 @@ public class Ping {
 
     // Deserializing
     public static Ping fromString(String messageString) {
+        String regex = "PING Source: (.*):(.*) TTL: (.*)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(messageString);
+        if (!matcher.matches()) {
+            return null;
+        }
+        try {
+            InetAddress address = InetAddress.getByName(matcher.group(1));
+            int port = Integer.parseInt(matcher.group(2));
+            int ttl = Integer.parseInt(matcher.group(3));
+            return new Ping(address, port, ttl);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
     // Serializing
     @Override
     public String toString() {
-        return "PING Source: " + this.sourceAddress.getHostName() + ":" + 
-            this.sourcePort + " TTL: " + this.ttl; 
+        return "PING Source: " + this.sourceAddress.getHostName() + ":" +
+            this.sourcePort + " TTL: " + this.ttl;
     }
 
     public Ping reducedTtl() {
