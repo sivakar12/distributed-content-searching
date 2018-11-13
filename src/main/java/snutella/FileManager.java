@@ -1,9 +1,7 @@
 package snutella;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FileManager {
     private static final String[] FILENAMES = {
@@ -43,5 +41,13 @@ public class FileManager {
             this.availableFiles.add(
                     FILENAMES[random.nextInt(FILENAMES.length)]);
         }
+    }
+
+    public List<String> search(String query) {
+        return this.availableFiles.stream()
+                .filter(filename ->
+                    filename.toLowerCase().contains(query)
+                ).collect(Collectors.toList());
+
     }
 }
