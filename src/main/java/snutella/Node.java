@@ -12,12 +12,14 @@ public class Node {
     private String username;
 
     private NeighborListManager neighborManager;
+    private FileManager fileManager;
     private BSSClient bssClient;
 
     public Node(String address, int port, String bssAddress, int bssPort) {
         this.username = "team19";
         this.neighborManager = new NeighborListManager();
-        
+        this.fileManager = new FileManager();
+
         InetAddress inetAddress;
         try {
             inetAddress = InetAddress.getByName(address);
