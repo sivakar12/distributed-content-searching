@@ -37,7 +37,11 @@ public class Neighbor {
     public boolean getIsConnected() {
         return this.isConnected;
     }
-    
+
+    public String getStatusString() {
+        return String.format("Node: %s, Last Ping: %s, Connected: %s",
+                this.toString(), this.getLastPing().toString(), this.getIsConnected());
+    }
     @Override
     public String toString() {
         return this.address.getHostAddress() + ":" + this.port;

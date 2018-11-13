@@ -40,6 +40,11 @@ public class NeighborListManager {
         return this.neighbors.stream().filter(
                 n -> n.getIsConnected()).count();
     }
+    public String getNeighborDetails() {
+        return this.neighbors.stream()
+                .map(n -> n.getStatusString())
+                .reduce("", (s1, s2) -> s1 + s2 + "\n");
+    }
 
     public void refreshConnections() {
         long numberOfConnections = getNumberOfConnections();

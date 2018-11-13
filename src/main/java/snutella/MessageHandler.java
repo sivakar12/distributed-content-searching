@@ -1,5 +1,6 @@
 package snutella;
 
+import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -53,6 +54,22 @@ public class MessageHandler extends Thread {
 
         }
     }
+
+    public void handleNeighborsQuery(DatagramPacket packet) {
+        InetAddress sourceAddress = packet.getAddress();
+        int sourcePort = packet.getPort();
+        System.out.println("Neighbors query received from " +
+                sourceAddress.getHostName() + ":" + sourcePort);
+        String response = neighborManager.getNeighborDetails();
+        DatagramPacket responsePacket = new DatagramPacket(response.getBytes(),
+                response.getBytes().length, sourceAddress, sourcePort);
+        try {
+            this.socket.send(responsePacket);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
     public void listenForMessages() throws Exception {
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         while (true) {
@@ -60,6 +77,8 @@ public class MessageHandler extends Thread {
             String message = new String(packet.getData());
             if (message.startsWith("PING")) {           // TODO: Remove hardcoded string
                 handlePing(packet);
+            } else if (message.startsWith("NEIGHBORS")) {
+                handleNeighborsQuery(packet);
             }
         }
     }
