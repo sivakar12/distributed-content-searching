@@ -11,13 +11,13 @@ public class MessageHandler extends Thread {
     private static final int BUFFER_SIZE = 1024;
     private byte[] buffer;
     
-    private List<Neighbor> neighbors;
+    private NeighborListManager neighborManager;
     private DatagramSocket socket;
 
-    public MessageHandler(DatagramSocket socket, List<Neighbor> neighbors) {
+    public MessageHandler(DatagramSocket socket, NeighborListManager neighborManager) {
         this.socket = socket;
         this.buffer = new byte[BUFFER_SIZE];
-        this.neighbors = neighbors;
+        this.neighborManager = neighborManager;
     }
     
     public void run()  {
@@ -37,7 +37,7 @@ public class MessageHandler extends Thread {
         pingMessage = pingMessage.replaceAll("\\x00", "");
         Ping ping = Ping.fromString(pingMessage);
 
-        Optional<Neighbor> match = this.neighbors.stream()
+        Optional<Neighbor> match = this.neighborManager.getNeighbors().stream()
                 .filter(n ->
                         n.getAddress().equals(ping.getSourceAddress()) &&
                         n.getPort() == ping.getSourcePort()
@@ -49,7 +49,8 @@ public class MessageHandler extends Thread {
         if (!match.isPresent()) {
             Neighbor newNeighbor = new Neighbor(
                     ping.getSourceAddress(), ping.getSourcePort());
-            this.neighbors.add(newNeighbor);
+            this.neighborManager.addNeighbor(newNeighbor);
+
         }
     }
     public void listenForMessages() throws Exception {

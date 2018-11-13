@@ -11,12 +11,13 @@ public class Node {
 
     private String username;
 
-    private List<Neighbor> neighbors;
+    private NeighborListManager neighborManager;
     private BSSClient bssClient;
 
     public Node(String address, int port, String bssAddress, int bssPort) {
         this.username = "team19";
-
+        this.neighborManager = new NeighborListManager();
+        
         InetAddress inetAddress;
         try {
             inetAddress = InetAddress.getByName(address);
@@ -58,8 +59,10 @@ public class Node {
 
     public void registerToBSServer() throws Exception {
 
-        this.neighbors = this.bssClient.register(this.getAddress(), this.getPort(), this.username);
-        System.out.println("Neighbors: " + this.neighbors);
+        List<Neighbor> neighbors = this.bssClient.register(
+                this.getAddress(), this.getPort(), this.username);
+        neighborManager.addNeighbors(neighbors);
+        System.out.println("Neighbors: " + neighbors);
     }
 
     public void unregisterFromBSServer() throws Exception {
@@ -68,7 +71,7 @@ public class Node {
 
     public void listenForMessages() {
         try {
-            Thread thread = new MessageHandler(this.socket, this.neighbors);
+            Thread thread = new MessageHandler(this.socket, this.neighborManager);
             thread.start();
         } catch (Exception e) {
             System.err.println(e);
@@ -77,7 +80,7 @@ public class Node {
     }
     public void sendPings() {
         try {
-            Thread thread = new PingSender(this.socket, this.neighbors);
+            Thread thread = new PingSender(this.socket, this.neighborManager.getNeighbors());
             thread.start();
         } catch (Exception e) {
             System.err.println(e);
