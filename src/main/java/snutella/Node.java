@@ -80,7 +80,7 @@ public class Node {
     }
     public void sendPings() {
         try {
-            Thread thread = new PingSender(this.socket, this.neighborManager.getNeighbors());
+            Thread thread = new PingSender(this.socket, this.neighborManager);
             thread.start();
         } catch (Exception e) {
             System.err.println(e);

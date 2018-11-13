@@ -13,19 +13,15 @@ public class PingSender extends Thread {
     private static final int DEFAULT_TTL = 5;
 
     private DatagramSocket socket;
-    private List<Neighbor> peers;
+    private NeighborListManager neighborListManager;
 
-    public PingSender(DatagramSocket socket, List<Neighbor> peers) {
+    public PingSender(DatagramSocket socket, NeighborListManager neighborListManager) {
         this.socket = socket;
-        this.peers = peers;
-    }
-
-    public void changePeers(List<Neighbor> peers) {
-        this.peers = peers;
+        this.neighborListManager = neighborListManager;
     }
 
     private void sendPingToConnectedPeers() {
-        for (Neighbor peer: peers) {
+        for (Neighbor peer: this.neighborListManager.getNeighbors()) {
             if (peer.getIsConnected())
                 this.sendPing(peer);
         }

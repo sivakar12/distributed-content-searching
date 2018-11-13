@@ -22,7 +22,9 @@ public class Ping {
     public int getSourcePort() {
         return this.sourcePort;
     }
-
+    public int getTtl() {
+        return this.ttl;
+    }
     // Deserializing
     public static Ping fromString(String messageString) {
         String regex = "PING Source: (.*):(.*) TTL: (.*)";

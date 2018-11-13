@@ -5,7 +5,6 @@ import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 public class MessageHandler extends Thread {
@@ -28,7 +27,16 @@ public class MessageHandler extends Thread {
             System.err.println(e);
         }
     }
-
+    private void sendMessageToDestination(String message, InetAddress address, int port) {
+        byte[] messageBytes = message.getBytes();
+        DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length,
+                address, port);
+        try {
+            socket.send(packet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public void handlePing(DatagramPacket packet) {
         InetAddress address = packet.getAddress();
         int port = packet.getPort();
@@ -51,7 +59,18 @@ public class MessageHandler extends Thread {
             Neighbor newNeighbor = new Neighbor(
                     ping.getSourceAddress(), ping.getSourcePort());
             this.neighborManager.addNeighbor(newNeighbor);
+        }
 
+        Ping forwardingPing = ping.reducedTtl();
+        if (forwardingPing.getTtl() != 0) {
+           this.neighborManager.getNeighbors().stream()
+                   .filter(n -> n.getIsConnected())
+                   .filter(n -> n.getAddress().equals(ping.getSourceAddress())
+                           && n.getPort() != ping.getSourcePort())
+                   .forEach(n -> {
+                        sendMessageToDestination(forwardingPing.toString(),
+                                n.getAddress(), n.getPort());
+                   });
         }
     }
 
@@ -61,13 +80,7 @@ public class MessageHandler extends Thread {
         System.out.println("Neighbors query received from " +
                 sourceAddress.getHostName() + ":" + sourcePort);
         String response = neighborManager.getNeighborDetails();
-        DatagramPacket responsePacket = new DatagramPacket(response.getBytes(),
-                response.getBytes().length, sourceAddress, sourcePort);
-        try {
-            this.socket.send(responsePacket);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        sendMessageToDestination(response, sourceAddress, sourcePort);
 
     }
     public void listenForMessages() throws Exception {
