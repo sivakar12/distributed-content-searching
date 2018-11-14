@@ -1,4 +1,4 @@
-package snutella;
+package snutella.logging;
 
 public enum LogMessageType {
     QUERY,

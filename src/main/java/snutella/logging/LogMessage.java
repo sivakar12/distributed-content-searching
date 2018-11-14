@@ -1,4 +1,4 @@
-package snutella;
+package snutella.logging;
 
 import java.net.InetAddress;
 import java.util.Date;

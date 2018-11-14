@@ -1,5 +1,9 @@
 package snutella;
 
+import snutella.logging.LogMessage;
+import snutella.logging.LogMessageType;
+import snutella.logging.LogsManager;
+
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
@@ -13,11 +17,13 @@ public class MessageHandler extends Thread {
     
     private NeighborListManager neighborManager;
     private DatagramSocket socket;
+    private LogsManager logsManager;
 
     public MessageHandler(DatagramSocket socket, NeighborListManager neighborManager) {
         this.socket = socket;
         this.buffer = new byte[BUFFER_SIZE];
         this.neighborManager = neighborManager;
+        this.logsManager = LogsManager.getInstance();
     }
     
     public void run()  {
@@ -40,12 +46,17 @@ public class MessageHandler extends Thread {
     public void handlePing(DatagramPacket packet) {
         InetAddress address = packet.getAddress();
         int port = packet.getPort();
-        System.out.println("Ping received from " + address.getHostName() + ":" + port);
 
         String pingMessage = new String(packet.getData());
         pingMessage = pingMessage.replaceAll("\\x00", "");
         Ping ping = Ping.fromString(pingMessage);
 
+        LogMessage logMessage = new LogMessage(true, LogMessageType.PING,
+                packet.getAddress(), packet.getPort(), this.socket.getLocalAddress(),
+                this.socket.getPort(), new Date(), pingMessage);
+        this.logsManager.log(logMessage);
+
+        System.out.println("Ping received from " + address.getHostName() + ":" + port);
         Optional<Neighbor> match = this.neighborManager.getNeighbors().stream()
                 .filter(n ->
                         n.getAddress().equals(ping.getSourceAddress()) &&
@@ -70,6 +81,11 @@ public class MessageHandler extends Thread {
                    .forEach(n -> {
                         sendMessageToDestination(forwardingPing.toString(),
                                 n.getAddress(), n.getPort());
+                        LogMessage logItem = new LogMessage(false, LogMessageType.PING,
+                                this.socket.getLocalAddress(), this.socket.getLocalPort(),
+                                n.getAddress(), n.getPort(), new Date(),
+                                forwardingPing.toString());
+                        this.logsManager.log(logItem);
                    });
         }
     }

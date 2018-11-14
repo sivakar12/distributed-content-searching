@@ -1,9 +1,13 @@
 package snutella;
 
+import snutella.logging.LogMessage;
+import snutella.logging.LogMessageType;
+import snutella.logging.LogsManager;
+
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.util.List;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -14,10 +18,12 @@ public class PingSender extends Thread {
 
     private DatagramSocket socket;
     private NeighborListManager neighborListManager;
+    private LogsManager logsManager;
 
     public PingSender(DatagramSocket socket, NeighborListManager neighborListManager) {
         this.socket = socket;
         this.neighborListManager = neighborListManager;
+        this.logsManager = LogsManager.getInstance();
     }
 
     private void sendPingToConnectedPeers() {
@@ -33,6 +39,12 @@ public class PingSender extends Thread {
 
             Ping ping = new Ping(this.socket.getLocalAddress(),
                 this.socket.getLocalPort(), DEFAULT_TTL);
+
+            LogMessage logMessage = new LogMessage(false, LogMessageType.PING,
+                    this.socket.getLocalAddress(), this.socket.getLocalPort(),
+                    neighbor.getAddress(), neighbor.getPort(), new Date(), ping.toString());
+            this.logsManager.log(logMessage);
+
             byte[] messageBytes = ping.toString().getBytes();
             DatagramPacket packet = new DatagramPacket(
                 messageBytes, messageBytes.length, address, port);
