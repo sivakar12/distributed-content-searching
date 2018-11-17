@@ -2,15 +2,19 @@ package snutella.gui;
 
 import com.sun.org.apache.xpath.internal.patterns.NodeTestFilter;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import snutella.Node;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Random;
 
@@ -20,6 +24,20 @@ public class MainWindow extends Application {
     @Override
     public void start(Stage primaryStage) {
         getInitialInformation(primaryStage);
+    }
+
+    private Scene getPrimaryScene() {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("node_details.fxml"));
+        MainController controller = new MainController(this.node);
+        loader.setController(controller);
+        try {
+            Pane mainPane = loader.<Pane>load();
+            return new Scene(mainPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void getInitialInformation(Stage primaryStage) {
@@ -37,7 +55,7 @@ public class MainWindow extends Application {
             int bssPort = Integer.parseInt(bssPortField.getText());
 
             this.node = new Node(address, port, bssAddress, bssPort);
-            primaryStage.close();
+            primaryStage.setScene(getPrimaryScene());
         });
 
         gridPane.add(new Label("Address"), 0, 0);
