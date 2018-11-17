@@ -1,10 +1,13 @@
 package snutella;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class NeighborListManager {
     private final static int MAX_CONNECTIONS = 2;
+    private final static int MAX_TIME_WITHOUT_PING = 20 * 1000;
 
     private List<Neighbor> neighbors;
 
@@ -60,6 +63,14 @@ public class NeighborListManager {
                     .filter(n -> !n.getIsConnected())
                     .limit(numberToConnect)
                     .forEach(neighbor -> neighbor.setIsConnected(true));
+        }
+        Date currentTime = new Date();
+        List<Neighbor> inactiveNeighbors = this.neighbors.stream().filter(n -> {
+            long difference = currentTime.getTime() - n.getLastPing().getTime();
+            return difference > MAX_TIME_WITHOUT_PING;
+        }).collect(Collectors.toList());
+        for (Neighbor n: inactiveNeighbors) {
+            this.neighbors.remove(n);
         }
     }
 }
