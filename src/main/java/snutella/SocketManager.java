@@ -32,14 +32,12 @@ public class SocketManager {
             e.printStackTrace();
         }
     }
-    public String receiveMessage() {
+    public DatagramPacket receiveMessage() {
         byte[] buffer = new byte[1024];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         try {
             this.socket.receive(packet);
-            String message = new String(packet.getData());
-            message = message.trim();
-            return message;
+            return packet;
         } catch (IOException e) {
             e.printStackTrace();
         }

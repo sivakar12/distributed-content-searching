@@ -92,9 +92,9 @@ public class MessageHandler extends Thread {
 
     }
     public void listenForMessages() throws Exception {
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         while (true) {
-            String message = this.socketManager.receiveMessage();
+            DatagramPacket packet = this.socketManager.receiveMessage();
+            String message = new String(packet.getData());
             if (message.startsWith("PING")) {           // TODO: Remove hardcoded string
                 handlePing(packet);
             } else if (message.startsWith("NEIGHBORS")) {
