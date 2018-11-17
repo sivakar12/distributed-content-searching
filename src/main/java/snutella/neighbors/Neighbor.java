@@ -1,4 +1,4 @@
-package snutella;
+package snutella.neighbors;
 
 import java.util.Date;
 import java.net.InetAddress;

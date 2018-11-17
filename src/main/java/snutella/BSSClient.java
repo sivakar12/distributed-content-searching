@@ -1,5 +1,7 @@
 package snutella;
 
+import snutella.neighbors.Neighbor;
+
 import java.util.List;
 import java.util.ArrayList;
 

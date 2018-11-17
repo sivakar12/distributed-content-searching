@@ -3,12 +3,11 @@ package snutella;
 import snutella.logging.LogMessage;
 import snutella.logging.LogMessageType;
 import snutella.logging.LogsManager;
+import snutella.neighbors.Neighbor;
+import snutella.neighbors.NeighborListManager;
 
-import java.io.IOException;
-import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.util.Date;
 import java.util.Optional;
 

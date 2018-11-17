@@ -1,4 +1,6 @@
-package snutella;
+package snutella.neighbors;
+
+import snutella.neighbors.Neighbor;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,9 +12,12 @@ public class NeighborListManager {
     private final static int MAX_TIME_WITHOUT_PING = 20 * 1000;
 
     private List<Neighbor> neighbors;
+    private List<NeighborListListener> listeners;
 
     public NeighborListManager() {
-        this.neighbors = new ArrayList<Neighbor>();
+        this.neighbors = new ArrayList<>();
+        this.listeners = new ArrayList<>();
+
         Runnable refreshConnection = () -> {
             while (true) {
                 try {
@@ -33,6 +38,9 @@ public class NeighborListManager {
     public void addNeighbors(List<Neighbor> neighbors) {
         for (Neighbor n: neighbors)
             this.addNeighbor(n);
+    }
+    public void addListener(NeighborListListener listener) {
+        this.listeners.add(listener);
     }
 
     public List<Neighbor> getNeighbors() {

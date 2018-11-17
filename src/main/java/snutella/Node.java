@@ -1,5 +1,8 @@
 package snutella;
 
+import snutella.neighbors.Neighbor;
+import snutella.neighbors.NeighborListManager;
+
 import java.net.UnknownHostException;
 import java.util.List;
 
