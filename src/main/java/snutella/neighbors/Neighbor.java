@@ -1,7 +1,10 @@
 package snutella.neighbors;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.net.InetAddress;
+import java.util.List;
 
 public class Neighbor {
     private InetAddress address;
@@ -9,11 +12,24 @@ public class Neighbor {
     private Date lastPing;
     private boolean isConnected;
 
+    private List<NeighborChangeListener> listeners;
+
     public Neighbor(InetAddress address, int port) {
         this.address = address;
         this.port = port;
         this.lastPing = new Date();
         this.isConnected = true;
+
+        this.listeners = new ArrayList<>();
+    }
+
+    public void addListener(NeighborChangeListener listener) {
+        this.listeners.add(listener);
+    }
+    public void notifyListeners() {
+        for (NeighborChangeListener listener: listeners) {
+            listener.onUpdate(this);
+        }
     }
 
     public InetAddress getAddress() {
@@ -25,6 +41,7 @@ public class Neighbor {
 
     public void setLastPing(Date date) {
         this.lastPing = date;
+        notifyListeners();
     }
     public Date getLastPing() {
         return this.lastPing;
@@ -32,6 +49,7 @@ public class Neighbor {
 
     public void setIsConnected(boolean isConnected) {
         this.isConnected = isConnected;
+        notifyListeners();
     }
 
     public boolean getIsConnected() {
@@ -39,8 +57,10 @@ public class Neighbor {
     }
 
     public String getStatusString() {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
         return String.format("Node: %s, Last Ping: %s, Connected: %s",
-                this.toString(), this.getLastPing().toString(), this.getIsConnected());
+                this.toString(), timeFormat.format(this.getLastPing()),
+                this.getIsConnected());
     }
     @Override
     public String toString() {

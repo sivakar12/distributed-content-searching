@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -10,6 +9,12 @@
       <Label fx:id="title" text="SNUTELLA">
          <font>
             <Font name="Droid Serif" size="24.0" />
+         </font>
+      </Label>
+      <Label text="Neigibors" />
+      <Label fx:id="neighborDetails">
+         <font>
+            <Font size="18.0" />
          </font>
       </Label>
    </children>

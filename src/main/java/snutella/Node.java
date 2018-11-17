@@ -96,6 +96,10 @@ public class Node {
         }
     }
 
+    public NeighborListManager getNeighborManager() {
+        return neighborManager;
+    }
+
     public static void main(String[] args) {
         if (args.length != 4) {
             System.err.println("Input port, and bootstrap sever config correctly");

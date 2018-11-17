@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class NeighborListManager {
+public class NeighborListManager implements NeighborChangeListener {
     private final static int MAX_CONNECTIONS = 2;
     private final static int MAX_TIME_WITHOUT_PING = 20 * 1000;
 
@@ -32,7 +32,9 @@ public class NeighborListManager {
     }
 
     public synchronized void addNeighbor(Neighbor neighbor) {
+        neighbor.addListener(this);
         this.neighbors.add(neighbor);
+        this.notifyListeners();
     }
 
     public void addNeighbors(List<Neighbor> neighbors) {
@@ -45,6 +47,7 @@ public class NeighborListManager {
 
     public List<Neighbor> getNeighbors() {
         return this.neighbors;
+
     }
 
     public long getNumberOfConnections() {
@@ -80,5 +83,17 @@ public class NeighborListManager {
         for (Neighbor n: inactiveNeighbors) {
             this.neighbors.remove(n);
         }
+        this.notifyListeners();
+    }
+    private void notifyListeners() {
+        System.out.println("Updating neighbors view");
+        for(NeighborListListener listener: this.listeners) {
+            listener.onUpdate(this.neighbors);
+        }
+    }
+
+    @Override
+    public void onUpdate(Neighbor neighbor) {
+        this.notifyListeners();
     }
 }
