@@ -14,6 +14,8 @@ public class Node {
     private NeighborListManager neighborManager;
     private FileManager fileManager;
     private BSSClient bssClient;
+    private MessageHandler messageHandler;
+    private PingSender pingSender;
 
     public Node(String address, int port, String bssAddress, int bssPort) {
         this.username = "team19";
@@ -74,8 +76,8 @@ public class Node {
 
     public void listenForMessages() {
         try {
-            Thread thread = new MessageHandler(this.socketManager, this.neighborManager);
-            thread.start();
+            this.messageHandler = new MessageHandler(this.socketManager, this.neighborManager);
+            this.messageHandler.start();
         } catch (Exception e) {
             System.err.println(e);
             return;
@@ -83,8 +85,8 @@ public class Node {
     }
     public void sendPings() {
         try {
-            Thread thread = new PingSender(this.socketManager, this.neighborManager);
-            thread.start();
+            this.pingSender = new PingSender(this.socketManager, this.neighborManager);
+            this.pingSender.start();
         } catch (Exception e) {
             System.err.println(e);
             return;
@@ -103,5 +105,14 @@ public class Node {
 
         new Node(address, port, bssAddress, bssPort);
 
+    }
+    public void stop() {
+        try {
+            this.unregisterFromBSServer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        this.messageHandler.interrupt();
+        this.pingSender.interrupt();
     }
 }

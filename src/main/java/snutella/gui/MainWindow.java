@@ -2,6 +2,7 @@ package snutella.gui;
 
 import com.sun.org.apache.xpath.internal.patterns.NodeTestFilter;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -10,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import snutella.Node;
 
 import java.io.IOException;
@@ -30,9 +32,9 @@ public class MainWindow extends Application {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("node_details.fxml"));
         MainController controller = new MainController(this.node);
-        loader.setController(controller);
         try {
             Pane mainPane = loader.<Pane>load();
+            loader.setController(controller);
             return new Scene(mainPane);
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,6 +73,14 @@ public class MainWindow extends Application {
         Scene scene = new Scene(gridPane);
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        this.node.stop();
+        super.stop();
+        Platform.exit();
+        System.exit(0);
     }
 
     public static void main(String[] args) {
