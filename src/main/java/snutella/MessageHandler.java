@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.util.Date;
 import java.util.Optional;
 
@@ -16,11 +17,11 @@ public class MessageHandler extends Thread {
     private byte[] buffer;
     
     private NeighborListManager neighborManager;
-    private DatagramSocket socket;
+    private SocketManager socketManager;
     private LogsManager logsManager;
 
-    public MessageHandler(DatagramSocket socket, NeighborListManager neighborManager) {
-        this.socket = socket;
+    public MessageHandler(SocketManager socketManager, NeighborListManager neighborManager) {
+        this.socketManager = socketManager;
         this.buffer = new byte[BUFFER_SIZE];
         this.neighborManager = neighborManager;
         this.logsManager = LogsManager.getInstance();
@@ -33,16 +34,6 @@ public class MessageHandler extends Thread {
             System.err.println(e);
         }
     }
-    private void sendMessageToDestination(String message, InetAddress address, int port) {
-        byte[] messageBytes = message.getBytes();
-        DatagramPacket packet = new DatagramPacket(messageBytes, messageBytes.length,
-                address, port);
-        try {
-            socket.send(packet);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
     public void handlePing(DatagramPacket packet) {
         InetAddress address = packet.getAddress();
         int port = packet.getPort();
@@ -52,8 +43,9 @@ public class MessageHandler extends Thread {
         Ping ping = Ping.fromString(pingMessage);
 
         LogMessage logMessage = new LogMessage(true, LogMessageType.PING,
-                packet.getAddress(), packet.getPort(), this.socket.getLocalAddress(),
-                this.socket.getPort(), new Date(), pingMessage);
+                packet.getAddress(), packet.getPort(),
+                this.socketManager.getSocket().getLocalAddress(),
+                this.socketManager.getSocket().getPort(), new Date(), pingMessage);
         this.logsManager.log(logMessage);
 
         System.out.println("Ping received from " + address.getHostName() + ":" + port);
@@ -79,10 +71,10 @@ public class MessageHandler extends Thread {
                    .filter(n -> n.getAddress().equals(ping.getSourceAddress())
                            && n.getPort() != ping.getSourcePort())
                    .forEach(n -> {
-                        sendMessageToDestination(forwardingPing.toString(),
+                        socketManager.sendMessage(forwardingPing.toString(),
                                 n.getAddress(), n.getPort());
                         LogMessage logItem = new LogMessage(false, LogMessageType.PING,
-                                this.socket.getLocalAddress(), this.socket.getLocalPort(),
+                                this.socketManager.getAddress(), this.socketManager.getPort(),
                                 n.getAddress(), n.getPort(), new Date(),
                                 forwardingPing.toString());
                         this.logsManager.log(logItem);
@@ -96,14 +88,13 @@ public class MessageHandler extends Thread {
         System.out.println("Neighbors query received from " +
                 sourceAddress.getHostName() + ":" + sourcePort);
         String response = neighborManager.getNeighborDetails();
-        sendMessageToDestination(response, sourceAddress, sourcePort);
+        socketManager.sendMessage(response, sourceAddress, sourcePort);
 
     }
     public void listenForMessages() throws Exception {
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         while (true) {
-            socket.receive(packet);
-            String message = new String(packet.getData());
+            String message = this.socketManager.receiveMessage();
             if (message.startsWith("PING")) {           // TODO: Remove hardcoded string
                 handlePing(packet);
             } else if (message.startsWith("NEIGHBORS")) {

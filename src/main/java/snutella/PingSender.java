@@ -16,12 +16,12 @@ public class PingSender extends Thread {
     private static final int PERIOD = 5000;
     private static final int DEFAULT_TTL = 5;
 
-    private DatagramSocket socket;
+    private SocketManager socketManager;
     private NeighborListManager neighborListManager;
     private LogsManager logsManager;
 
-    public PingSender(DatagramSocket socket, NeighborListManager neighborListManager) {
-        this.socket = socket;
+    public PingSender(SocketManager socketManager, NeighborListManager neighborListManager) {
+        this.socketManager = socketManager;
         this.neighborListManager = neighborListManager;
         this.logsManager = LogsManager.getInstance();
     }
@@ -37,19 +37,16 @@ public class PingSender extends Thread {
             InetAddress address = neighbor.getAddress();
             int port = neighbor.getPort();
 
-            Ping ping = new Ping(this.socket.getLocalAddress(),
-                this.socket.getLocalPort(), DEFAULT_TTL);
+            Ping ping = new Ping(this.socketManager.getAddress(),
+                this.socketManager.getPort(), DEFAULT_TTL);
 
             LogMessage logMessage = new LogMessage(false, LogMessageType.PING,
-                    this.socket.getLocalAddress(), this.socket.getLocalPort(),
+                    this.socketManager.getAddress(), this.socketManager.getPort(),
                     neighbor.getAddress(), neighbor.getPort(), new Date(), ping.toString());
             this.logsManager.log(logMessage);
 
-            byte[] messageBytes = ping.toString().getBytes();
-            DatagramPacket packet = new DatagramPacket(
-                messageBytes, messageBytes.length, address, port);
-
-            socket.send(packet);
+            this.socketManager.sendMessage(ping.toString(),
+                    neighbor.getAddress(), neighbor.getPort());
             System.out.println("Sent ping to " + address.toString() + ":" + port);
         } catch (Exception e) {
             e.printStackTrace();

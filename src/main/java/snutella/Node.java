@@ -7,7 +7,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class Node {
-    private DatagramSocket socket;
+    private SocketManager socketManager;
 
     private String username;
 
@@ -28,7 +28,8 @@ public class Node {
             return;
         }
         try {
-            this.socket = new DatagramSocket(port, inetAddress);
+            DatagramSocket socket = new DatagramSocket(port, inetAddress);
+            this.socketManager = new SocketManager(socket);
         } catch (Exception e) {
             System.err.println(e);
             return;
@@ -53,10 +54,10 @@ public class Node {
     }
 
     public InetAddress getAddress() {
-        return this.socket.getLocalAddress();
+        return this.socketManager.getAddress();
     }
     public int getPort() {
-        return this.socket.getLocalPort();
+        return this.socketManager.getPort();
     }
 
     public void registerToBSServer() throws Exception {
@@ -73,7 +74,7 @@ public class Node {
 
     public void listenForMessages() {
         try {
-            Thread thread = new MessageHandler(this.socket, this.neighborManager);
+            Thread thread = new MessageHandler(this.socketManager, this.neighborManager);
             thread.start();
         } catch (Exception e) {
             System.err.println(e);
@@ -82,16 +83,12 @@ public class Node {
     }
     public void sendPings() {
         try {
-            Thread thread = new PingSender(this.socket, this.neighborManager);
+            Thread thread = new PingSender(this.socketManager, this.neighborManager);
             thread.start();
         } catch (Exception e) {
             System.err.println(e);
             return;
         }
-    }
-    @Override
-    public void finalize() {
-        this.socket.disconnect();
     }
 
     public static void main(String[] args) {
