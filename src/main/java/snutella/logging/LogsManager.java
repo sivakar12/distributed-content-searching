@@ -42,4 +42,7 @@ public class LogsManager {
                 )
         ).collect(Collectors.toList());
     }
+    public void clearLogs() {
+        this.logs.clear();
+    }
 }

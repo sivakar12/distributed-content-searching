@@ -1,6 +1,7 @@
 package snutella.logging;
 
 import java.net.InetAddress;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class LogMessage {
@@ -59,5 +60,14 @@ public class LogMessage {
 
     public String getMessage() {
         return message;
+    }
+
+    public String toString() {
+        String timeString = (new SimpleDateFormat("HH:mm:ss")).format(this.time);
+        String type = this.incoming ? "Incoming" : "Outgoing";
+        String address = this.incoming ? this.sourceAddress.getHostAddress() : this.destinationAddress.getHostAddress();
+        String port = this.incoming ? String.valueOf(this.sourcePort) : String.valueOf(this.destinationPort);
+        String message = this.message;
+        return String.format("%s %s %s:%s %s", timeString, type, address, port, message);
     }
 }

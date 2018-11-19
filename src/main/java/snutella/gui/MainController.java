@@ -10,6 +10,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import snutella.Node;
+import snutella.logging.LogMessage;
+import snutella.logging.LogMessageListener;
+import snutella.logging.LogsManager;
 import snutella.neighbors.Neighbor;
 import snutella.neighbors.NeighborListListener;
 
@@ -20,7 +23,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 
-public class MainController implements Initializable, NeighborListListener {
+public class MainController implements Initializable, NeighborListListener,
+        LogMessageListener {
     Node node;
     @FXML
     public Label title;
@@ -29,11 +33,12 @@ public class MainController implements Initializable, NeighborListListener {
     @FXML
     public Label filesList;
     @FXML
-    private Button refreshFilesButton;
+    private Label logs;
 
     public MainController(Node node) {
         this.node = node;
         this.node.getNeighborManager().addListener(this);
+        LogsManager.getInstance().addListener(this);
 
     }
 
@@ -59,4 +64,15 @@ public class MainController implements Initializable, NeighborListListener {
         this.filesList.setText(this.node.getFileManager().getFilesString());
     }
 
+    @Override
+    public void onNewLogMessage(LogMessage message) {
+        String newText = message.toString() + "\n" + this.logs.getText();
+        Platform.runLater(() -> {
+            this .logs.setText(newText);
+        });
+    }
+    @FXML
+    public void clearLogs() {
+        this.logs.setText("");
+    }
 }
