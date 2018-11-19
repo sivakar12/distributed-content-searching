@@ -50,4 +50,12 @@ public class FileManager {
                 ).collect(Collectors.toList());
 
     }
+
+    public void refreshFiles() {
+        this.initializeRandomFiles();
+    }
+
+    public String getFilesString() {
+        return this.availableFiles.stream().reduce("", (s1, s2) -> s1 + s2 + "\n");
+    }
 }

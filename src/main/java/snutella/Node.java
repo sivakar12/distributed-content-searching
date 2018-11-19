@@ -96,6 +96,10 @@ public class Node {
         }
     }
 
+    public FileManager getFileManager() {
+        return fileManager;
+    }
+
     public NeighborListManager getNeighborManager() {
         return neighborManager;
     }

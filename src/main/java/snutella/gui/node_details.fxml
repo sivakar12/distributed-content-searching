@@ -1,21 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.Button?>
 <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label fx:id="title" text="SNUTELLA">
-         <font>
-            <Font name="Droid Serif" size="24.0" />
-         </font>
-      </Label>
-      <Label text="Neigibors" />
-      <Label fx:id="neighborDetails">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Label>
+      <BorderPane prefHeight="200.0" prefWidth="200.0">
+         <top>
+            <Label fx:id="title" text="SNUTELLA" BorderPane.alignment="CENTER">
+               <font>
+                  <Font name="Droid Serif" size="24.0" />
+               </font>
+            </Label>
+         </top>
+         <left>
+            <VBox BorderPane.alignment="CENTER">
+               <children>
+                  <Label text="Neigibors">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font></Label>
+                  <Label fx:id="neighborDetails" />
+               </children>
+            </VBox>
+         </left>
+         <right>
+            <VBox BorderPane.alignment="CENTER">
+               <children>
+                  <HBox>
+                     <children>
+                        <Label text="Files">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="refreshFilesButton" mnemonicParsing="false" onAction="#refreshFiles" text="Refresh" />
+                     </children>
+                  </HBox>
+                  <Label fx:id="filesList" text="" />
+               </children>
+            </VBox>
+         </right>
+      </BorderPane>
    </children>
 </VBox>
