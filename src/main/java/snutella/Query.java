@@ -12,6 +12,7 @@ public class Query {
     private String filename;
 
     private static final String MESSAGE_START = "SER";
+    private static final int MAX_HOPS = 5;
 
     public Query(InetAddress sourceAddress,
                  int sourcePort, int hops, String filename) {
@@ -19,6 +20,13 @@ public class Query {
         this.sourcePort = sourcePort;
         this.filename = filename;
         this.hops = hops;
+    }
+
+    public Query(InetAddress sourceAddress, int sourcePort, String filename) {
+        this.sourceAddress = sourceAddress;
+        this.sourcePort = sourcePort;
+        this.filename = filename;
+        this.hops = MAX_HOPS;
     }
     public InetAddress getSourceAddress() {
         return this.sourceAddress;
@@ -42,7 +50,7 @@ public class Query {
                 this.getSourcePort(), this.getFilename(), this.getHops());
     }
 
-    public Query fromString(String messageString) {
+    public static Query fromString(String messageString) {
         String regex = MESSAGE_START + " (.*) (.*) \"(.*)\" (.*)";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(messageString);

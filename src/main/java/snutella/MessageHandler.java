@@ -9,6 +9,7 @@ import snutella.neighbors.NeighborListManager;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 public class MessageHandler extends Thread {
@@ -18,12 +19,15 @@ public class MessageHandler extends Thread {
     private NeighborListManager neighborManager;
     private SocketManager socketManager;
     private LogsManager logsManager;
+    private FileManager fileManager;
 
-    public MessageHandler(SocketManager socketManager, NeighborListManager neighborManager) {
+    public MessageHandler(SocketManager socketManager, NeighborListManager
+            neighborManager, FileManager fileManager) {
         this.socketManager = socketManager;
         this.buffer = new byte[BUFFER_SIZE];
         this.neighborManager = neighborManager;
         this.logsManager = LogsManager.getInstance();
+        this.fileManager = fileManager;
     }
     
     public void run()  {
@@ -91,6 +95,43 @@ public class MessageHandler extends Thread {
         socketManager.sendMessage(response, sourceAddress, sourcePort);
 
     }
+
+    public void handleQuery(DatagramPacket packet) {
+        String message = new String(packet.getData());
+        message = message.trim();
+        Query query = Query.fromString(message);
+
+        LogMessage log = new LogMessage(true, LogMessageType.QUERY,
+                packet.getAddress(), packet.getPort(),
+                this.socketManager.getAddress(), this.socketManager.getPort(),
+                new Date(), message);
+        this.logsManager.log(log);
+
+        Query forwardingQuery = query.reducedHop();
+        this.neighborManager.getNeighbors().stream()
+                .filter(n -> n.getIsConnected())
+                .forEach(n -> {
+                    LogMessage logMessage = new LogMessage(false, LogMessageType.QUERY,
+                            this.socketManager.getAddress(), this.socketManager.getPort(),
+                            n.getAddress(), n.getPort(), new Date(), forwardingQuery.toString());
+                    this.logsManager.log(logMessage);
+                    this.socketManager.sendMessage(forwardingQuery.toString(),
+                            n.getAddress(), n.getPort());
+                });
+
+        List<String> results = this.fileManager.search(query.getFilename());
+        QueryRespone response = new QueryRespone(this.socketManager.getAddress(),
+                this.socketManager.getPort(), query.getHops(), results);
+        LogMessage queryResponesLog = new LogMessage(false, LogMessageType.QUERY_RESPOSNE,
+                this.socketManager.getAddress(), this.socketManager.getPort(),
+                query.getSourceAddress(), query.getSourcePort(), new Date(),
+                response.toString());
+        this.logsManager.log(queryResponesLog);
+        this.socketManager.sendMessage(response.toString(), query.getSourceAddress(),
+                query.getSourcePort());
+
+
+    }
     public void listenForMessages() throws Exception {
         while (true) {
             DatagramPacket packet = this.socketManager.receiveMessage();
@@ -99,6 +140,8 @@ public class MessageHandler extends Thread {
                 handlePing(packet);
             } else if (message.startsWith("NEIGHBORS")) {
                 handleNeighborsQuery(packet);
+            } else if (message.startsWith("SER")) {
+                handleQuery(packet);
             }
         }
     }

@@ -4,10 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import snutella.Node;
 import snutella.logging.LogMessage;
@@ -34,6 +31,8 @@ public class MainController implements Initializable, NeighborListListener,
     public Label filesList;
     @FXML
     private Label logs;
+    @FXML
+    private TextField queryText;
 
     public MainController(Node node) {
         this.node = node;
@@ -74,5 +73,10 @@ public class MainController implements Initializable, NeighborListListener,
     @FXML
     public void clearLogs() {
         this.logs.setText("");
+    }
+
+    @FXML
+    public void runQuery() {
+        this.node.sendQuery(this.queryText.getText());
     }
 }

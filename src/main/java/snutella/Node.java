@@ -1,9 +1,13 @@
 package snutella;
 
+import snutella.logging.LogMessage;
+import snutella.logging.LogMessageType;
+import snutella.logging.LogsManager;
 import snutella.neighbors.Neighbor;
 import snutella.neighbors.NeighborListManager;
 
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.List;
 
 import java.net.DatagramSocket;
@@ -65,6 +69,14 @@ public class Node {
         return this.socketManager.getPort();
     }
 
+    public FileManager getFileManager() {
+        return fileManager;
+    }
+
+    public NeighborListManager getNeighborManager() {
+        return neighborManager;
+    }
+
     public void registerToBSServer() throws Exception {
 
         List<Neighbor> neighbors = this.bssClient.register(
@@ -76,16 +88,17 @@ public class Node {
     public void unregisterFromBSServer() throws Exception {
         this.bssClient.unregister(this.getAddress(), this.getPort(), this.username);
     }
-
     public void listenForMessages() {
         try {
-            this.messageHandler = new MessageHandler(this.socketManager, this.neighborManager);
+            this.messageHandler = new MessageHandler(this.socketManager,
+                    this.neighborManager, this.fileManager);
             this.messageHandler.start();
         } catch (Exception e) {
             System.err.println(e);
             return;
         }
     }
+
     public void sendPings() {
         try {
             this.pingSender = new PingSender(this.socketManager, this.neighborManager);
@@ -96,14 +109,30 @@ public class Node {
         }
     }
 
-    public FileManager getFileManager() {
-        return fileManager;
-    }
+    public void sendQuery(String queryString) {
+        Query query = new Query(this.getAddress(), this.getPort(), queryString);
+        LogsManager logsManager = LogsManager.getInstance();
+        this.neighborManager.getNeighbors().stream()
+            .filter(n -> n.getIsConnected())
+            .forEach(n -> {
+                LogMessage log = new LogMessage(false, LogMessageType.QUERY,
+                        this.getAddress(), this.getPort(), n.getAddress(),
+                        n.getPort(), new Date(), query.toString());
+                logsManager.log(log);
+                this.socketManager.sendMessage(query.toString(), n.getAddress(),
+                        n.getPort());
 
-    public NeighborListManager getNeighborManager() {
-        return neighborManager;
+            });
     }
-
+    public void stop() {
+        try {
+            this.unregisterFromBSServer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        this.messageHandler.interrupt();
+        this.pingSender.interrupt();
+    }
     public static void main(String[] args) {
         if (args.length != 4) {
             System.err.println("Input port, and bootstrap sever config correctly");
@@ -116,14 +145,5 @@ public class Node {
 
         new Node(address, port, bssAddress, bssPort);
 
-    }
-    public void stop() {
-        try {
-            this.unregisterFromBSServer();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        this.messageHandler.interrupt();
-        this.pingSender.interrupt();
     }
 }

@@ -5,5 +5,6 @@ public enum LogMessageType {
     PING,
     NEIGHBORS,
     JOIN,
-    LEAVE
+    LEAVE,
+    QUERY_RESPOSNE;
 }
