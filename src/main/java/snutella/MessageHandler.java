@@ -86,16 +86,6 @@ public class MessageHandler extends Thread {
         }
     }
 
-    public void handleNeighborsQuery(DatagramPacket packet) {
-        InetAddress sourceAddress = packet.getAddress();
-        int sourcePort = packet.getPort();
-        System.out.println("Neighbors query received from " +
-                sourceAddress.getHostName() + ":" + sourcePort);
-        String response = neighborManager.getNeighborDetails();
-        socketManager.sendMessage(response, sourceAddress, sourcePort);
-
-    }
-
     public void handleQuery(DatagramPacket packet) {
         String message = new String(packet.getData());
         message = message.trim();
@@ -129,8 +119,6 @@ public class MessageHandler extends Thread {
         this.logsManager.log(queryResponesLog);
         this.socketManager.sendMessage(response.toString(), query.getSourceAddress(),
                 query.getSourcePort());
-
-
     }
     public void listenForMessages() throws Exception {
         while (true) {
@@ -138,8 +126,6 @@ public class MessageHandler extends Thread {
             String message = new String(packet.getData());
             if (message.startsWith("PING")) {           // TODO: Remove hardcoded string
                 handlePing(packet);
-            } else if (message.startsWith("NEIGHBORS")) {
-                handleNeighborsQuery(packet);
             } else if (message.startsWith("SER")) {
                 handleQuery(packet);
             }
