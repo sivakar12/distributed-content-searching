@@ -85,7 +85,7 @@ public class NeighborListManager implements NeighborChangeListener {
         }
         this.notifyListeners();
     }
-    private void notifyListeners() {
+    public void notifyListeners() {
         for(NeighborListListener listener: this.listeners) {
             listener.onUpdate(this.neighbors);
         }

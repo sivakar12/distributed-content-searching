@@ -56,6 +56,7 @@ public class MessageHandler extends Thread {
                 .findAny();
         match.ifPresent(neighbor -> {
             neighbor.setLastPing(new Date());
+            this.neighborManager.notifyListeners();
         });
         if (!match.isPresent()) {
             Neighbor newNeighbor = new Neighbor(
@@ -67,7 +68,7 @@ public class MessageHandler extends Thread {
         if (forwardingPing.getTtl() != 0) {
            this.neighborManager.getNeighbors().stream()
                    .filter(n -> n.getIsConnected())
-                   .filter(n -> n.getAddress().equals(ping.getSourceAddress())
+                   .filter(n -> !n.getAddress().equals(ping.getSourceAddress())
                            && n.getPort() != ping.getSourcePort())
                    .forEach(n -> {
                         socketManager.sendMessage(forwardingPing.toString(),
