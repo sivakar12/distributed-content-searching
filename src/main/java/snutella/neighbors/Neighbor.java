@@ -18,7 +18,7 @@ public class Neighbor {
         this.address = address;
         this.port = port;
         this.lastPing = new Date();
-        this.isConnected = true;
+        this.isConnected = false;
 
         this.listeners = new ArrayList<>();
     }

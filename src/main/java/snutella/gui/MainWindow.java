@@ -54,6 +54,7 @@ public class MainWindow extends Application {
 
             this.node = new Node(address, port, bssAddress, bssPort);
             primaryStage.setScene(getPrimaryScene());
+            this.node.start();
         });
 
         gridPane.add(new Label("Address"), 0, 0);

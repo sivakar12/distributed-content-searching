@@ -11,27 +11,23 @@
 
 <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <BorderPane prefHeight="200.0" prefWidth="200.0">
-         <top>
+      <VBox prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+         <children>
             <Label fx:id="title" text="SNUTELLA" BorderPane.alignment="CENTER">
                <font>
                   <Font name="Droid Serif" size="24.0" />
                </font>
             </Label>
-         </top>
-         <left>
-            <VBox BorderPane.alignment="CENTER">
+            <VBox BorderPane.alignment="CENTER" VBox.vgrow="ALWAYS">
                <children>
                   <Label text="Neigibors">
                      <font>
                         <Font name="System Bold" size="13.0" />
                      </font></Label>
-                  <Label fx:id="neighborDetails" />
+                  <Label fx:id="neighborDetails" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
-         </left>
-         <right>
-            <VBox BorderPane.alignment="CENTER">
+            <VBox BorderPane.alignment="CENTER" VBox.vgrow="ALWAYS">
                <children>
                   <HBox>
                      <children>
@@ -43,12 +39,10 @@
                         <Button fx:id="refreshFilesButton" mnemonicParsing="false" onAction="#refreshFiles" text="Refresh" />
                      </children>
                   </HBox>
-                  <Label fx:id="filesList" text="" />
+                  <Label fx:id="filesList" text="" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
-         </right>
-         <center>
-            <VBox>
+            <VBox VBox.vgrow="ALWAYS">
                <children>
                   <HBox>
                      <children>
@@ -60,13 +54,11 @@
                         <Button onAction="#clearLogs" text="Clear" />
                      </children>
                   </HBox>
-                  <ScrollPane>
+                  <ScrollPane VBox.vgrow="ALWAYS">
                      <Label fx:id="logs" />
                   </ScrollPane>
                </children>
             </VBox>
-         </center>
-         <bottom>
             <VBox>
                <children>
                   <Label text="Query">
@@ -76,13 +68,13 @@
                   </Label>
                   <HBox>
                      <children>
-                        <TextField fx:id="queryText"/>
-                        <Button mnemonicParsing="false" text="Button" onAction="#runQuery"/>
+                        <TextField fx:id="queryText" />
+                        <Button mnemonicParsing="false" onAction="#runQuery" text="Button" />
                      </children>
                   </HBox>
                </children>
             </VBox>
-         </bottom>
-      </BorderPane>
+         </children>
+      </VBox>
    </children>
 </VBox>

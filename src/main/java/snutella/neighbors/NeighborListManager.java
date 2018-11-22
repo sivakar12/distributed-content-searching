@@ -20,12 +20,12 @@ public class NeighborListManager implements NeighborChangeListener {
 
         Runnable refreshConnection = () -> {
             while (true) {
+                this.refreshConnections();
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                this.refreshConnections();
             }
         };
         (new Thread(refreshConnection)).start();

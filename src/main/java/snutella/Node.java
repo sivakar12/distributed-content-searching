@@ -50,6 +50,9 @@ public class Node {
             e.printStackTrace();
             return;
         }
+    }
+
+    public void start() {
         try {
             this.registerToBSServer();
         } catch (Exception e) {
@@ -58,6 +61,7 @@ public class Node {
             return;
 
         }
+        this.join();
         this.listenForMessages();
         this.sendPings();
     }
@@ -87,6 +91,32 @@ public class Node {
 
     public void unregisterFromBSServer() throws Exception {
         this.bssClient.unregister(this.getAddress(), this.getPort(), this.username);
+    }
+
+    public void join() {
+        JoinMessage joinMessage = new JoinMessage(this.getAddress(), this.getPort());
+        this.neighborManager.getNeighbors().stream()
+                .forEach(n -> {
+                    LogMessage log = new LogMessage(false, LogMessageType.JOIN,
+                            this.getAddress(), this.getPort(), n.getAddress(), n.getPort(),
+                            new Date(), joinMessage.toString());
+                    LogsManager.getInstance().log(log);
+                    socketManager.sendMessage(joinMessage.toString(), n.getAddress(), n.getPort());
+                });
+        System.out.println("Sent join message");
+    }
+
+    public void leave() {
+        LeaveMessage leaveMessage = new LeaveMessage(this.getAddress(), this.getPort());
+        this.neighborManager.getNeighbors().stream()
+                .filter(n -> n.getIsConnected())
+                .forEach(n -> {
+                    LogMessage log = new LogMessage(false, LogMessageType.LEAVE,
+                            this.getAddress(), this.getPort(), n.getAddress(), n.getPort(),
+                            new Date(), leaveMessage.toString());
+                    LogsManager.getInstance().log(log);
+                    socketManager.sendMessage(leaveMessage.toString(), n.getAddress(), n.getPort());
+                });
     }
     public void listenForMessages() {
         try {
@@ -130,6 +160,8 @@ public class Node {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        this.leave();
+        System.out.println("Sent leave message");
         this.messageHandler.interrupt();
         this.pingSender.interrupt();
     }

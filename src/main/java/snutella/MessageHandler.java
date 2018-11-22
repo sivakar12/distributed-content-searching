@@ -112,13 +112,50 @@ public class MessageHandler extends Thread {
         List<String> results = this.fileManager.search(query.getFilename());
         QueryRespone response = new QueryRespone(this.socketManager.getAddress(),
                 this.socketManager.getPort(), query.getHops(), results);
-        LogMessage queryResponesLog = new LogMessage(false, LogMessageType.QUERY_RESPOSNE,
+        LogMessage queryResponseLog = new LogMessage(false, LogMessageType.QUERY_RESPOSNE,
                 this.socketManager.getAddress(), this.socketManager.getPort(),
                 query.getSourceAddress(), query.getSourcePort(), new Date(),
                 response.toString());
-        this.logsManager.log(queryResponesLog);
+        this.logsManager.log(queryResponseLog);
         this.socketManager.sendMessage(response.toString(), query.getSourceAddress(),
                 query.getSourcePort());
+    }
+
+    public void handleJoin(DatagramPacket packet) {
+        String messageString = new String(packet.getData());
+        messageString = messageString.trim();
+
+        LogMessage log = new LogMessage(true, LogMessageType.JOIN,
+                packet.getAddress(), packet.getPort(),
+                socketManager.getAddress(), socketManager.getPort(),
+                new Date(), messageString);
+        this.logsManager.log(log);
+
+        JoinMessage joinMessage = JoinMessage.fromString(messageString);
+        Neighbor neighbor = new Neighbor(joinMessage.getAddress(), joinMessage.getPort());
+        neighbor.setIsConnected(true);
+        this.neighborManager.getNeighbors().add(neighbor);
+        this.neighborManager.notifyListeners();
+    }
+
+    public void handleLeave(DatagramPacket packet) {
+        String messageString = new String(packet.getData());
+        messageString = messageString.trim();
+
+
+        LogMessage log = new LogMessage(true, LogMessageType.LEAVE,
+                packet.getAddress(), packet.getPort(), socketManager.getAddress(),
+                socketManager.getPort(), new Date(), messageString);
+        logsManager.log(log);
+
+        LeaveMessage leaveMessage = LeaveMessage.fromString(messageString);
+        Optional<Neighbor> match = this.neighborManager.getNeighbors().stream()
+                .filter(n -> n.getAddress().equals(leaveMessage.getAddress())
+                    && n.getPort() == leaveMessage.getPort())
+                .findAny();
+        if (match.isPresent()) {
+            this.neighborManager.getNeighbors().remove(match.get());
+        }
     }
     public void listenForMessages() throws Exception {
         while (true) {
@@ -128,6 +165,10 @@ public class MessageHandler extends Thread {
                 handlePing(packet);
             } else if (message.startsWith("SER")) {
                 handleQuery(packet);
+            } else if (message.startsWith("JOIN")) {
+                handleJoin(packet);
+            } else if (message.startsWith("LEAVE")) {
+                handleLeave(packet);
             }
         }
     }
