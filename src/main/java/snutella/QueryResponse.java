@@ -4,6 +4,7 @@ import snutella.queryresults.QueryResultItem;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,9 +25,11 @@ public class QueryResponse {
     }
 
     public String toString() {
-        String files = String.join(" ", this.files);
+        String files = this.files.stream()
+                .map(f -> "\"" + f + "\"")
+                .collect(Collectors.joining());
         return String.format("SEROK %d %s %d %d %s", this.files.size(),
-                this.address.toString().substring(1), this.port, this.hops, files);
+                this.address.toString().substring(1), FILE_SERVER_PORT, this.hops, files);
     }
 
     public static QueryResponse fromString(String message) {
@@ -39,9 +42,20 @@ public class QueryResponse {
         }
         int port = Integer.parseInt(messageComponents[3]);
         int hops = Integer.parseInt(messageComponents[4]);
-        String[] files = Arrays.copyOfRange(messageComponents, 5,
+        String[] fileTokens = Arrays.copyOfRange(messageComponents, 5,
                 messageComponents.length);
-        return new QueryResponse(address, port, hops, Arrays.asList(files));
+        List<String> files = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder(" ");
+        for (String token: fileTokens) {
+            stringBuilder.append(token.replaceAll("\"", ""));
+            stringBuilder.append(" ");
+            if (token.endsWith("\"")) {
+                String filename = stringBuilder.toString();
+                files.add(stringBuilder.toString().trim());
+                stringBuilder = new StringBuilder();
+            }
+        }
+        return new QueryResponse(address, port, hops, files);
     }
 
     public List<QueryResultItem> getItems() {

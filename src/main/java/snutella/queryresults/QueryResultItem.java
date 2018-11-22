@@ -27,6 +27,6 @@ public class QueryResultItem {
 
     @Override
     public String toString() {
-        return "\"" + filename + "\" :" + address.toString().substring(1) + ":" + port;
+        return "\"" + filename + "\" : " + address.toString().substring(1) + ":" + port;
     }
 }
