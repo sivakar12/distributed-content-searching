@@ -37,6 +37,7 @@ public class MessageHandler extends Thread {
             System.err.println(e);
         }
     }
+
     public void handlePing(DatagramPacket packet) {
         InetAddress address = packet.getAddress();
         int port = packet.getPort();
@@ -98,16 +99,20 @@ public class MessageHandler extends Thread {
         this.logsManager.log(log);
 
         Query forwardingQuery = query.reducedHop();
-        this.neighborManager.getNeighbors().stream()
-                .filter(n -> n.getIsConnected())
-                .forEach(n -> {
-                    LogMessage logMessage = new LogMessage(false, LogMessageType.QUERY,
-                            this.socketManager.getAddress(), this.socketManager.getPort(),
-                            n.getAddress(), n.getPort(), new Date(), forwardingQuery.toString());
-                    this.logsManager.log(logMessage);
-                    this.socketManager.sendMessage(forwardingQuery.toString(),
-                            n.getAddress(), n.getPort());
-                });
+        if (forwardingQuery.getHops() > 0) {
+            this.neighborManager.getNeighbors().stream()
+                    .filter(n -> n.getIsConnected())
+                    .filter(n -> !n.getAddress().equals(packet.getAddress())
+                            && n.getPort() != packet.getPort())
+                    .forEach(n -> {
+                        LogMessage logMessage = new LogMessage(false, LogMessageType.QUERY,
+                                this.socketManager.getAddress(), this.socketManager.getPort(),
+                                n.getAddress(), n.getPort(), new Date(), forwardingQuery.toString());
+                        this.logsManager.log(logMessage);
+                        this.socketManager.sendMessage(forwardingQuery.toString(),
+                                n.getAddress(), n.getPort());
+                    });
+        }
 
         List<String> results = this.fileManager.search(query.getFilename());
         QueryRespone response = new QueryRespone(this.socketManager.getAddress(),
@@ -119,6 +124,18 @@ public class MessageHandler extends Thread {
         this.logsManager.log(queryResponseLog);
         this.socketManager.sendMessage(response.toString(), query.getSourceAddress(),
                 query.getSourcePort());
+    }
+
+    public void handleQueryResponse(DatagramPacket packet) {
+        String responseMessage = new String(packet.getData());
+        responseMessage = responseMessage.trim();
+
+        LogMessage log = new LogMessage(true, LogMessageType.QUERY_RESPOSNE,
+                packet.getAddress(), packet.getPort(), socketManager.getAddress(),
+                socketManager.getPort(), new Date(), responseMessage);
+        logsManager.log(log);
+
+        System.out.println("Response for search: " + responseMessage);
     }
 
     public void handleJoin(DatagramPacket packet) {
@@ -157,17 +174,20 @@ public class MessageHandler extends Thread {
             this.neighborManager.getNeighbors().remove(match.get());
         }
     }
+
     public void listenForMessages() throws Exception {
         while (true) {
             DatagramPacket packet = this.socketManager.receiveMessage();
             String message = new String(packet.getData());
-            if (message.startsWith("PING")) {           // TODO: Remove hardcoded string
+            if (message.startsWith("PING ")) {           // TODO: Remove hardcoded string
                 handlePing(packet);
-            } else if (message.startsWith("SER")) {
+            } else if (message.startsWith("SER ")) {
                 handleQuery(packet);
-            } else if (message.startsWith("JOIN")) {
+            } else if (message.startsWith("SEROK ")) {
+                handleQueryResponse(packet);
+            } else if (message.startsWith("JOIN ")) {
                 handleJoin(packet);
-            } else if (message.startsWith("LEAVE")) {
+            } else if (message.startsWith("LEAVE ")) {
                 handleLeave(packet);
             }
         }

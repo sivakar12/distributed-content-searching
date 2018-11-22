@@ -20,7 +20,7 @@ public class QueryRespone {
 
     public String toString() {
         String files = String.join(" ", this.files);
-        return String.format("SEROK %d %d %d %d %s", this.files.size(),
-                this.address, this.port, this.hops, files);
+        return String.format("SEROK %d %s %d %d %s", this.files.size(),
+                this.address.toString().substring(1), this.port, this.hops, files);
     }
 }

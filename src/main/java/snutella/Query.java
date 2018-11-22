@@ -46,7 +46,7 @@ public class Query {
 
     public String toString() {
         return String.format("%s %s %d \"%s\" %d",
-                MESSAGE_START, this.getSourceAddress().toString(),
+                MESSAGE_START, this.getSourceAddress().toString().substring(1),
                 this.getSourcePort(), this.getFilename(), this.getHops());
     }
 

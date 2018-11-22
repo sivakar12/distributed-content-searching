@@ -43,12 +43,21 @@ public class FileManager {
         }
     }
 
+    private boolean satisfyQuery(String filename, String query) {
+        Set<String> filenameWords = new HashSet<>();
+        Collections.addAll(filenameWords, filename.toLowerCase().split(" "));
+        Set<String> queryWords = new HashSet<>();
+        Collections.addAll(queryWords, query.toLowerCase().split(" "));
+
+        Set<String> intersection = new HashSet<>(filenameWords);
+        intersection.retainAll(queryWords);
+        return intersection.size() > 0;
+    }
     public List<String> search(String query) {
         return this.availableFiles.stream()
                 .filter(filename ->
-                    filename.toLowerCase().contains(query)
+                    satisfyQuery(filename, query)
                 ).collect(Collectors.toList());
-
     }
 
     public void refreshFiles() {
