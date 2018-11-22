@@ -5,6 +5,7 @@ import snutella.logging.LogMessageType;
 import snutella.logging.LogsManager;
 import snutella.neighbors.Neighbor;
 import snutella.neighbors.NeighborListManager;
+import snutella.queryresults.QueryResultsManager;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -115,7 +116,7 @@ public class MessageHandler extends Thread {
         }
 
         List<String> results = this.fileManager.search(query.getFilename());
-        QueryRespone response = new QueryRespone(this.socketManager.getAddress(),
+        QueryResponse response = new QueryResponse(this.socketManager.getAddress(),
                 this.socketManager.getPort(), query.getHops(), results);
         LogMessage queryResponseLog = new LogMessage(false, LogMessageType.QUERY_RESPOSNE,
                 this.socketManager.getAddress(), this.socketManager.getPort(),
@@ -135,6 +136,8 @@ public class MessageHandler extends Thread {
                 socketManager.getPort(), new Date(), responseMessage);
         logsManager.log(log);
 
+        QueryResponse queryResponse = QueryResponse.fromString(responseMessage);
+        QueryResultsManager.getInstance().addItems(queryResponse.getItems());
         System.out.println("Response for search: " + responseMessage);
     }
 

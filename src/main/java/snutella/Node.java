@@ -5,6 +5,7 @@ import snutella.logging.LogMessageType;
 import snutella.logging.LogsManager;
 import snutella.neighbors.Neighbor;
 import snutella.neighbors.NeighborListManager;
+import snutella.queryresults.QueryResultsManager;
 
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -140,6 +141,7 @@ public class Node {
     }
 
     public void sendQuery(String queryString) {
+        QueryResultsManager.getInstance().reset();
         Query query = new Query(this.getAddress(), this.getPort(), queryString);
         LogsManager logsManager = LogsManager.getInstance();
         this.neighborManager.getNeighbors().stream()

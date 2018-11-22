@@ -59,7 +59,7 @@
                   </ScrollPane>
                </children>
             </VBox>
-            <VBox>
+            <VBox VBox.vgrow="ALWAYS">
                <children>
                   <Label text="Query">
                      <font>
@@ -69,9 +69,10 @@
                   <HBox>
                      <children>
                         <TextField fx:id="queryText" />
-                        <Button mnemonicParsing="false" onAction="#runQuery" text="Button" />
+                        <Button mnemonicParsing="false" onAction="#runQuery" text="Search" />
                      </children>
                   </HBox>
+                  <Label text="No results" fx:id="queryResults" VBox.vgrow="ALWAYS"/>
                </children>
             </VBox>
          </children>

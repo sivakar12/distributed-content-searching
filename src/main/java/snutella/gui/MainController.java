@@ -12,6 +12,9 @@ import snutella.logging.LogMessageListener;
 import snutella.logging.LogsManager;
 import snutella.neighbors.Neighbor;
 import snutella.neighbors.NeighborListListener;
+import snutella.queryresults.QueryResultItem;
+import snutella.queryresults.QueryResultsListener;
+import snutella.queryresults.QueryResultsManager;
 
 import java.net.InetAddress;
 import java.net.URL;
@@ -21,7 +24,7 @@ import java.util.ResourceBundle;
 
 
 public class MainController implements Initializable, NeighborListListener,
-        LogMessageListener {
+        LogMessageListener, QueryResultsListener {
     Node node;
     @FXML
     public Label title;
@@ -33,11 +36,14 @@ public class MainController implements Initializable, NeighborListListener,
     private Label logs;
     @FXML
     private TextField queryText;
+    @FXML
+    private Label queryResults;
 
     public MainController(Node node) {
         this.node = node;
         this.node.getNeighborManager().addListener(this);
         LogsManager.getInstance().addListener(this);
+        QueryResultsManager.getInstance().addListener(this);
 
     }
 
@@ -78,5 +84,15 @@ public class MainController implements Initializable, NeighborListListener,
     @FXML
     public void runQuery() {
         this.node.sendQuery(this.queryText.getText());
+    }
+
+    @Override
+    public void resultsChanged(List<QueryResultItem> items) {
+        String results = items.stream()
+                .map(i -> i.toString())
+                .reduce("", (s1, s2) -> s1 + "\n" + s2);
+        Platform.runLater(() -> {
+            this.queryResults.setText(results);
+        });
     }
 }
