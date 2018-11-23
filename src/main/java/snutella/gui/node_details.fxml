@@ -9,52 +9,61 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.191" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <VBox prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+      <VBox prefHeight="200.0" prefWidth="200.0">
          <children>
-            <Label fx:id="title" text="SNUTELLA" BorderPane.alignment="CENTER">
+            <Label fx:id="title" alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="SNUTELLA" textAlignment="RIGHT" BorderPane.alignment="CENTER" VBox.vgrow="ALWAYS">
                <font>
-                  <Font name="Droid Serif" size="24.0" />
+                  <Font size="48.0" />
                </font>
             </Label>
             <VBox BorderPane.alignment="CENTER" VBox.vgrow="ALWAYS">
                <children>
                   <Label text="Neigibors">
                      <font>
-                        <Font name="System Bold" size="13.0" />
-                     </font></Label>
-                  <Label fx:id="neighborDetails" VBox.vgrow="ALWAYS" />
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <ScrollPane maxWidth="1.7976931348623157E308" minHeight="100.0" VBox.vgrow="ALWAYS">
+                     <content>
+                        <Label fx:id="neighborDetails" />
+                     </content>
+                  </ScrollPane>
                </children>
             </VBox>
             <VBox BorderPane.alignment="CENTER" VBox.vgrow="ALWAYS">
                <children>
                   <HBox>
                      <children>
-                        <Label text="Files">
+                        <Label maxWidth="1.7976931348623157E308" text="Files" HBox.hgrow="ALWAYS">
                            <font>
-                              <Font name="System Bold" size="13.0" />
+                              <Font name="System Bold" size="24.0" />
                            </font>
                         </Label>
                         <Button fx:id="refreshFilesButton" mnemonicParsing="false" onAction="#refreshFiles" text="Refresh" />
                      </children>
                   </HBox>
-                  <Label fx:id="filesList" text="" VBox.vgrow="ALWAYS" />
+                  <ScrollPane maxHeight="1.7976931348623157E308" minHeight="100.0" VBox.vgrow="ALWAYS">
+                     <content>
+                        <Label fx:id="filesList" text="" />
+                     </content>
+                  </ScrollPane>
                </children>
             </VBox>
             <VBox VBox.vgrow="ALWAYS">
                <children>
                   <HBox>
                      <children>
-                        <Label text="Logs">
+                        <Label maxWidth="1.7976931348623157E308" text="Logs" HBox.hgrow="ALWAYS">
                            <font>
-                              <Font name="System Bold" size="13.0" />
+                              <Font name="System Bold" size="24.0" />
                            </font>
                         </Label>
                         <Button onAction="#clearLogs" text="Clear" />
                      </children>
                   </HBox>
-                  <ScrollPane VBox.vgrow="ALWAYS">
+                  <ScrollPane maxHeight="1.7976931348623157E308" minHeight="200.0">
                      <Label fx:id="logs" />
                   </ScrollPane>
                </children>
@@ -63,16 +72,20 @@
                <children>
                   <Label text="Query">
                      <font>
-                        <Font name="System Bold" size="13.0" />
+                        <Font name="System Bold" size="24.0" />
                      </font>
                   </Label>
                   <HBox>
                      <children>
-                        <TextField fx:id="queryText" />
+                        <TextField fx:id="queryText" HBox.hgrow="ALWAYS" />
                         <Button mnemonicParsing="false" onAction="#runQuery" text="Search" />
                      </children>
                   </HBox>
-                  <Label text="No results" fx:id="queryResults" VBox.vgrow="ALWAYS"/>
+                  <ScrollPane maxHeight="1.7976931348623157E308" minHeight="100.0" VBox.vgrow="ALWAYS">
+                     <content>
+                        <Label fx:id="queryResults" text="No results" />
+                     </content>
+                  </ScrollPane>
                </children>
             </VBox>
          </children>
