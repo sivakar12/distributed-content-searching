@@ -83,7 +83,7 @@
                   </HBox>
                   <ScrollPane maxHeight="1.7976931348623157E308" minHeight="100.0" VBox.vgrow="ALWAYS">
                      <content>
-                        <Label fx:id="queryResults" text="No results" />
+                        <VBox fx:id="queryResults" />
                      </content>
                   </ScrollPane>
                </children>

@@ -6,6 +6,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import snutella.Node;
 import snutella.logging.LogMessage;
 import snutella.logging.LogMessageListener;
@@ -37,7 +40,7 @@ public class MainController implements Initializable, NeighborListListener,
     @FXML
     private TextField queryText;
     @FXML
-    private Label queryResults;
+    private VBox queryResults;
 
     public MainController(Node node) {
         this.node = node;
@@ -88,11 +91,24 @@ public class MainController implements Initializable, NeighborListListener,
 
     @Override
     public void resultsChanged(List<QueryResultItem> items) {
-        String results = items.stream()
-                .map(i -> i.toString())
-                .reduce("", (s1, s2) -> s1 + "\n" + s2);
         Platform.runLater(() -> {
-            this.queryResults.setText(results);
+            this.queryResults.getChildren().removeAll();
+            items.stream()
+                    .map(i -> {
+                        Label label = new Label(i.toString());
+                        Button button = new Button("GET");
+                        button.setOnAction(e -> {
+                            System.out.println("Downloading " + i.getFilename());
+                        });
+//                        label.setMaxWidth(Double.MAX_VALUE);
+
+                        HBox.setHgrow(label, Priority.ALWAYS);
+                        HBox hbox = new HBox(label, button);
+                        hbox.setMaxWidth(Double.MAX_VALUE);
+                        return hbox;
+                    }).forEach(box -> {
+                        this.queryResults.getChildren().add(box);
+            });
         });
     }
 }

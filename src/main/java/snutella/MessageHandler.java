@@ -118,7 +118,7 @@ public class MessageHandler extends Thread {
 
         List<String> results = this.fileManager.search(query.getFilename());
         QueryResponse response = new QueryResponse(this.socketManager.getAddress(),
-                this.socketManager.getPort(), query.getHops(), results);
+                FileServer.getInstance().getServingPort(), query.getHops(), results);
         LogMessage queryResponseLog = new LogMessage(false, LogMessageType.QUERY_RESPOSNE,
                 this.socketManager.getAddress(), this.socketManager.getPort(),
                 query.getSourceAddress(), query.getSourcePort(), new Date(),

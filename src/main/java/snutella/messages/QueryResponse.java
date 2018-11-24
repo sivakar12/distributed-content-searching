@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class QueryResponse {
-    private static final int FILE_SERVER_PORT = 8888;
     private InetAddress address;
     private int port;
     private int hops;
@@ -29,7 +28,7 @@ public class QueryResponse {
                 .map(f -> "\"" + f + "\"")
                 .collect(Collectors.joining());
         return String.format("SEROK %d %s %d %d %s", this.files.size(),
-                this.address.toString().substring(1), FILE_SERVER_PORT, this.hops, files);
+                this.address.toString().substring(1), this.port, this.hops, files);
     }
 
     public static QueryResponse fromString(String message) {
