@@ -1,14 +1,17 @@
 package snutella;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class FileManager {
+    private static final String FILE_DIRECTORY = "files";
     private static final String[] FILENAMES = {
             "Adventures of Tintin",
             "Jack and Jill",
             "Glee",
-            "The Vampire Diarie",
+            "The Vampire Diaries",
             "King Arthur",
             "Windows XP",
             "Harry Potter",
@@ -40,6 +43,20 @@ public class FileManager {
         while (this.availableFiles.size() != numberOfFiles) {
             this.availableFiles.add(
                     FILENAMES[random.nextInt(FILENAMES.length)]);
+        }
+        createFiles();
+    }
+
+    private void createFiles() {
+        File folder = new File(FILE_DIRECTORY);
+        folder.mkdirs();
+        folder.deleteOnExit();
+        for (String filename: availableFiles) {
+            try {
+                new File(FILE_DIRECTORY, filename).createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
