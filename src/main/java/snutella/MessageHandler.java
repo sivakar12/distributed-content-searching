@@ -3,6 +3,7 @@ package snutella;
 import snutella.logging.LogMessage;
 import snutella.logging.LogMessageType;
 import snutella.logging.LogsManager;
+import snutella.messages.*;
 import snutella.neighbors.Neighbor;
 import snutella.neighbors.NeighborListManager;
 import snutella.queryresults.QueryResultsManager;

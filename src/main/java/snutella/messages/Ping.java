@@ -1,4 +1,4 @@
-package snutella;
+package snutella.messages;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

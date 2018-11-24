@@ -1,4 +1,4 @@
-package snutella;
+package snutella.messages;
 
 import snutella.queryresults.QueryResultItem;
 

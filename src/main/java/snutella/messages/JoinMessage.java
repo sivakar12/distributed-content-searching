@@ -1,14 +1,14 @@
-package snutella;
+package snutella.messages;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class LeaveMessage {
-    public static final String MESSAGE_START = "LEAVE";
+public class JoinMessage {
+    public static final String MESSAGE_START = "JOIN";
     private InetAddress address;
     private int port;
 
-    public LeaveMessage(InetAddress address, int port) {
+    public JoinMessage(InetAddress address, int port) {
         this.address = address;
         this.port = port;
     }
@@ -21,12 +21,14 @@ public class LeaveMessage {
         return port;
     }
 
-    public static LeaveMessage fromString(String message) {
+    public static JoinMessage fromString(String message) {
+        System.out.println(message);
         String[] parts = message.split(" ");
+        System.out.println(parts[1]);
         try {
             InetAddress address = InetAddress.getByName(parts[1]);
             int port = Integer.parseInt(parts[2]);
-            return new LeaveMessage(address, port);
+            return new JoinMessage(address, port);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -34,6 +36,7 @@ public class LeaveMessage {
     }
 
     public String toString() {
+        System.out.println(address.toString());
         return MESSAGE_START + " " + address.toString().substring(1) +
                 " " + port;
     }
