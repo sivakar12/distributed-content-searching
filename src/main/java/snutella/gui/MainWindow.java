@@ -25,8 +25,7 @@ public class MainWindow extends Application {
 
     private Scene getPrimaryScene() {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("node_details.fxml"));
-//        MainController controller = new MainController(this.node);
+        loader.setLocation(getClass().getClassLoader().getResource("node_details.fxml"));
         try {
             MainController controller = new MainController(this.node);
             loader.setController(controller);
