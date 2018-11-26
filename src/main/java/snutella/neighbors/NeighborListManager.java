@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class NeighborListManager implements NeighborChangeListener {
     private final static int MAX_CONNECTIONS = 2;
-    private final static int MAX_TIME_WITHOUT_PING = 10 * 1000;
+    private final static int MAX_TIME_WITHOUT_PING = 30 * 1000;
 
     private List<Neighbor> neighbors;
     private List<NeighborListListener> listeners;

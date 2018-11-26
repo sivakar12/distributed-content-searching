@@ -115,7 +115,7 @@ public class Node {
     public void leave() {
         LeaveMessage leaveMessage = new LeaveMessage(this.getAddress(), this.getPort());
         this.neighborManager.getNeighbors().stream()
-                .filter(n -> n.getIsConnected())
+//                .filter(n -> n.getIsConnected())
                 .forEach(n -> {
                     LogMessage log = new LogMessage(false, LogMessageType.LEAVE,
                             this.getAddress(), this.getPort(), n.getAddress(), n.getPort(),

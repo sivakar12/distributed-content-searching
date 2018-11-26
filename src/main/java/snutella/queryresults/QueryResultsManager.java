@@ -22,6 +22,9 @@ public class QueryResultsManager {
 
     public void reset() {
         this.items.clear();
+        for (QueryResultsListener listener: listeners) {
+            listener.resultsChanged(this.items);
+        }
     }
 
     public void addItems(List<QueryResultItem> items) {
