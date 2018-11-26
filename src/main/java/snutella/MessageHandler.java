@@ -117,15 +117,17 @@ public class MessageHandler extends Thread {
         }
 
         List<String> results = this.fileManager.search(query.getFilename());
-        QueryResponse response = new QueryResponse(this.socketManager.getAddress(),
-                FileServer.getInstance().getServingPort(), query.getHops(), results);
-        LogMessage queryResponseLog = new LogMessage(false, LogMessageType.QUERY_RESPOSNE,
-                this.socketManager.getAddress(), this.socketManager.getPort(),
-                query.getSourceAddress(), query.getSourcePort(), new Date(),
-                response.toString());
-        this.logsManager.log(queryResponseLog);
-        this.socketManager.sendMessage(response.toString(), query.getSourceAddress(),
-                query.getSourcePort());
+        if (results.size() > 0) {
+            QueryResponse response = new QueryResponse(this.socketManager.getAddress(),
+                    FileServer.getInstance().getServingPort(), query.getHops(), results);
+            LogMessage queryResponseLog = new LogMessage(false, LogMessageType.QUERY_RESPOSNE,
+                    this.socketManager.getAddress(), this.socketManager.getPort(),
+                    query.getSourceAddress(), query.getSourcePort(), new Date(),
+                    response.toString());
+            this.logsManager.log(queryResponseLog);
+            this.socketManager.sendMessage(response.toString(), query.getSourceAddress(),
+                    query.getSourcePort());
+        }
     }
 
     public void handleQueryResponse(DatagramPacket packet) {
