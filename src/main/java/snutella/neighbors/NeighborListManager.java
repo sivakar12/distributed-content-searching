@@ -87,6 +87,9 @@ public class NeighborListManager implements NeighborChangeListener {
         this.notifyListeners();
     }
     public void disconnectOne() {
+        if (this.neighbors.size() < MAX_CONNECTIONS) {
+            return;
+        }
         Optional<Neighbor> match = this.neighbors.stream()
                 .filter(n -> n.getIsConnected())
                 .findAny();
