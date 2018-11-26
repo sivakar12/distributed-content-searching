@@ -12,6 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import snutella.Node;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
@@ -44,6 +45,19 @@ public class MainWindow extends Application {
         TextField portField = new TextField(String.valueOf(randomPort));
         TextField bssAddressField = new TextField("localhost");
         TextField bssPortField = new TextField("55555");
+
+        String hostAddressFromEnv = System.getenv("SNUTELLA_HOST_ADDRESS");
+        if (hostAddressFromEnv != null) {
+            addressField.setText(hostAddressFromEnv);
+        }
+        String bssAddressFromEnv = System.getenv("SNUTELLA_BOOTSTRAP_SERVER_ADDRESS");
+        if (bssAddressFromEnv != null) {
+            bssAddressField.setText(bssAddressFromEnv);
+        }
+        String bssPortFromEnv = System.getenv("SNUTELLA_BOOTSTRAP_SERVER_PORT");
+        if (bssPortFromEnv != null) {
+            bssPortField.setText(bssPortFromEnv);
+        }
         Button okButten = new Button("OK");
         okButten.setOnAction((event) -> {
             String address = addressField.getText();
