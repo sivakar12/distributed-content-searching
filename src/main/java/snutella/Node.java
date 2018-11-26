@@ -27,12 +27,13 @@ public class Node {
     private BSSClient bssClient;
     private MessageHandler messageHandler;
     private PingSender pingSender;
+    private FileServer fileServer;
 
     public Node(String address, int port, String bssAddress, int bssPort) {
         this.username = "team19";
         this.neighborManager = new NeighborListManager();
         this.fileManager = new FileManager();
-
+        this.fileServer = FileServer.getInstance();
         InetAddress inetAddress;
         try {
             inetAddress = InetAddress.getByName(address);
@@ -66,6 +67,7 @@ public class Node {
 
         }
         this.join();
+        this.fileServer.start();
         this.listenForMessages();
         this.sendPings();
     }

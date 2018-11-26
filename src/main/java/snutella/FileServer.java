@@ -3,14 +3,18 @@ package snutella;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Random;
 
-public class FileServer {
+public class FileServer extends Thread {
     private static FileServer instance;
     private ServerSocket serverSocket;
 
     private FileServer() {
+        int randomPort = new Random().nextInt(0xFFFF);
         try {
-            serverSocket = new ServerSocket();
+            serverSocket = new ServerSocket(randomPort);
+            System.out.println("File server started at port " +
+                    serverSocket.getLocalPort());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -23,7 +27,7 @@ public class FileServer {
         return instance;
     }
 
-    public void start() {
+    public void run() {
         while (true) {
             try {
                 Socket clientSocket = this.serverSocket.accept();
@@ -33,13 +37,13 @@ public class FileServer {
             }
         }
     }
-    public void stop() {
-        try {
-            serverSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void stop() {
+//        try {
+//            serverSocket.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private class ClientHandler extends Thread {
         private Socket clientSocket;
