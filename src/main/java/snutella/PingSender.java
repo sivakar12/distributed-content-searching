@@ -15,7 +15,7 @@ import java.util.TimerTask;
 public class PingSender extends Thread {
     private static final int DELAY = 5000;
     private static final int PERIOD = 5000;
-    private static final int DEFAULT_TTL = 5;
+    private static final int DEFAULT_TTL = 3;
 
     private SocketManager socketManager;
     private NeighborListManager neighborListManager;

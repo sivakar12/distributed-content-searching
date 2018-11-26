@@ -75,8 +75,8 @@ public class MessageHandler extends Thread {
         if (forwardingPing.getTtl() != 0) {
            this.neighborManager.getNeighbors().stream()
                    .filter(n -> n.getIsConnected())
-                   .filter(n -> !n.getAddress().equals(ping.getSourceAddress())
-                           && n.getPort() != ping.getSourcePort())
+                   .filter(n -> !(n.getAddress().equals(ping.getSourceAddress())
+                           && n.getPort() == ping.getSourcePort()))
                    .forEach(n -> {
                         socketManager.sendMessage(forwardingPing.toString(),
                                 n.getAddress(), n.getPort());
@@ -157,6 +157,7 @@ public class MessageHandler extends Thread {
         JoinMessage joinMessage = JoinMessage.fromString(messageString);
         Neighbor neighbor = new Neighbor(joinMessage.getAddress(), joinMessage.getPort());
         neighbor.setIsConnected(true);
+        this.neighborManager.disconnectOne();
         this.neighborManager.getNeighbors().add(neighbor);
         this.neighborManager.notifyListeners();
     }

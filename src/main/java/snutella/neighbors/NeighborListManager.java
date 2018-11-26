@@ -5,11 +5,12 @@ import snutella.neighbors.Neighbor;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class NeighborListManager implements NeighborChangeListener {
     private final static int MAX_CONNECTIONS = 2;
-    private final static int MAX_TIME_WITHOUT_PING = 20 * 1000;
+    private final static int MAX_TIME_WITHOUT_PING = 10 * 1000;
 
     private List<Neighbor> neighbors;
     private List<NeighborListListener> listeners;
@@ -84,6 +85,14 @@ public class NeighborListManager implements NeighborChangeListener {
             this.neighbors.remove(n);
         }
         this.notifyListeners();
+    }
+    public void disconnectOne() {
+        Optional<Neighbor> match = this.neighbors.stream()
+                .filter(n -> n.getIsConnected())
+                .findAny();
+        if (match.isPresent()) {
+            this.neighbors.remove(match.get());
+        }
     }
     public void notifyListeners() {
         for(NeighborListListener listener: this.listeners) {
