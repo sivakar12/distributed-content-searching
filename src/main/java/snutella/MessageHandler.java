@@ -104,8 +104,8 @@ public class MessageHandler extends Thread {
         if (forwardingQuery.getHops() > 0) {
             this.neighborManager.getNeighbors().stream()
                     .filter(n -> n.getIsConnected())
-                    .filter(n -> !n.getAddress().equals(packet.getAddress())
-                            && n.getPort() != packet.getPort())
+                    .filter(n -> !(n.getAddress().equals(packet.getAddress())
+                            && n.getPort() == packet.getPort()))
                     .forEach(n -> {
                         LogMessage logMessage = new LogMessage(false, LogMessageType.QUERY,
                                 this.socketManager.getAddress(), this.socketManager.getPort(),

@@ -94,7 +94,7 @@ public class NeighborListManager implements NeighborChangeListener {
                 .filter(n -> n.getIsConnected())
                 .findAny();
         if (match.isPresent()) {
-            this.neighbors.remove(match.get());
+            match.get().setIsConnected(false);
         }
     }
     public void notifyListeners() {
