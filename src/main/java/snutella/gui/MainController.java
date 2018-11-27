@@ -86,6 +86,7 @@ public class MainController implements Initializable, NeighborListListener,
 
     @FXML
     public void runQuery() {
+        this.queryResults.getChildren().clear();
         this.node.sendQuery(this.queryText.getText());
     }
 

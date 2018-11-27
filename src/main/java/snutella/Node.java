@@ -28,12 +28,15 @@ public class Node {
     private MessageHandler messageHandler;
     private PingSender pingSender;
     private FileServer fileServer;
+    private QueryResultsManager queryResultsManager;
 
     public Node(String address, int port, String bssAddress, int bssPort) {
         this.username = "team19";
         this.neighborManager = new NeighborListManager();
         this.fileManager = new FileManager();
         this.fileServer = FileServer.getInstance();
+        this.queryResultsManager = QueryResultsManager.getInstance();
+
         InetAddress inetAddress;
         try {
             inetAddress = InetAddress.getByName(address);
@@ -146,7 +149,7 @@ public class Node {
     }
 
     public void sendQuery(String queryString) {
-        QueryResultsManager.getInstance().reset();
+        queryResultsManager.reset();
         Query query = new Query(this.getAddress(), this.getPort(), queryString);
         LogsManager logsManager = LogsManager.getInstance();
         this.neighborManager.getNeighbors().stream()
