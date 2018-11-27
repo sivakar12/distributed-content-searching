@@ -1,15 +1,14 @@
 package snutella.queryresults;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class QueryResultsManager {
     private static QueryResultsManager instance;
-    private List<QueryResultItem> items;
+    private Set<QueryResultItem> items;
     private List<QueryResultsListener> listeners;
 
     private QueryResultsManager() {
-        this.items = new ArrayList<>();
+        this.items = new HashSet<>();
         this.listeners = new ArrayList<>();
     }
 

@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 
 public class MainController implements Initializable, NeighborListListener,
@@ -91,9 +92,9 @@ public class MainController implements Initializable, NeighborListListener,
     }
 
     @Override
-    public void resultsChanged(List<QueryResultItem> items) {
+    public void resultsChanged(Set<QueryResultItem> items) {
         Platform.runLater(() -> {
-            this.queryResults.getChildren().removeAll();
+            this.queryResults.getChildren().clear();
             items.stream()
                     .map(i -> {
                         Label label = new Label(i.toString());

@@ -1,7 +1,7 @@
 package snutella.queryresults;
 
-import java.util.List;
+import java.util.Set;
 
 public interface QueryResultsListener {
-    void resultsChanged(List<QueryResultItem> items);
+    void resultsChanged(Set<QueryResultItem> items);
 }
