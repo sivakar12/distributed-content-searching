@@ -62,6 +62,11 @@ public class FileServer extends Thread {
                 File file = new File("files", filename);
                 FileInputStream fileInputStream = new FileInputStream(file);
 
+                char[] buffer = new char[8 * 1024];
+                int len;
+                while ((len = in.read(buffer)) > 0) {
+                    out.write((new String(buffer)).getBytes(), 0, len);
+                }
                 in.close();
                 out.close();
                 clientSocket.close();
