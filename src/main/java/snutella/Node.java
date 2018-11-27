@@ -94,6 +94,7 @@ public class Node {
 
         List<Neighbor> neighbors = this.bssClient.register(
                 this.getAddress(), this.getPort(), this.username);
+        neighbors.forEach(n -> n.setIsConnected(true));
         neighborManager.addNeighbors(neighbors);
         System.out.println("Neighbors: " + neighbors);
     }
