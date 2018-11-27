@@ -179,6 +179,7 @@ public class MessageHandler extends Thread {
                 .findAny();
         if (match.isPresent()) {
             this.neighborManager.getNeighbors().remove(match.get());
+            this.neighborManager.notifyListeners();
         }
     }
 
