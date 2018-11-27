@@ -101,6 +101,7 @@ public class MainController implements Initializable, NeighborListListener,
                         Button button = new Button("GET");
                         button.setOnAction(e -> {
                             System.out.println("Downloading " + i.getFilename());
+                            this.node.download(i);
                         });
 //                        label.setMaxWidth(Double.MAX_VALUE);
 

@@ -1,15 +1,22 @@
 package snutella;
 
+import snutella.logging.LogMessage;
+import snutella.logging.LogMessageType;
+import snutella.logging.LogsManager;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Date;
 import java.util.Random;
 
 public class FileServer extends Thread {
     private static FileServer instance;
     private ServerSocket serverSocket;
+    private static final String FILE_DIRECTORY = "files";
 
     private FileServer() {
+
         int randomPort = new Random().nextInt(0xFFFF);
         try {
             serverSocket = new ServerSocket(randomPort);
@@ -53,24 +60,34 @@ public class FileServer extends Thread {
         }
         public void run() {
             try {
-                BufferedReader in = new BufferedReader(new
+                BufferedReader socketIn = new BufferedReader(new
                         InputStreamReader(clientSocket.getInputStream()));
-                OutputStream out = clientSocket.getOutputStream();
+                OutputStream socketOut = clientSocket.getOutputStream();
 
-                String filename = in.readLine();
+                String filename = socketIn.readLine();
 
-                File file = new File("files", filename);
+                LogMessage log = new LogMessage(true, LogMessageType.DOWNLOAD,
+                        clientSocket.getInetAddress(), clientSocket.getPort(),
+                        clientSocket.getLocalAddress(), clientSocket.getLocalPort(),
+                        new Date(), "GET " + filename);
+                LogsManager.getInstance().log(log);
+
+                System.out.println("File: " + filename);
+                System.out.println("Serving file " + filename);
+                File file = new File(FILE_DIRECTORY, filename);
                 FileInputStream fileInputStream = new FileInputStream(file);
 
-                char[] buffer = new char[8 * 1024];
+                byte[] buffer = new byte[8 * 1024];
                 int len;
-                while ((len = in.read(buffer)) > 0) {
-                    out.write((new String(buffer)).getBytes(), 0, len);
+                while ((len = fileInputStream.read(buffer)) > 0) {
+                    socketOut.write((new String(buffer)).getBytes(), 0, len);
                 }
-                in.close();
-                out.close();
+                fileInputStream.close();
+                socketIn.close();
+                socketOut.close();
                 clientSocket.close();
             } catch (IOException e) {
+                System.out.println("Error serving file");
                 e.printStackTrace();
             }
         }

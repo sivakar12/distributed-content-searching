@@ -6,5 +6,6 @@ public enum LogMessageType {
     NEIGHBORS,
     JOIN,
     LEAVE,
-    QUERY_RESPOSNE;
+    QUERY_RESPOSNE,
+    DOWNLOAD;
 }

@@ -8,6 +8,7 @@ import snutella.messages.LeaveMessage;
 import snutella.messages.Query;
 import snutella.neighbors.Neighbor;
 import snutella.neighbors.NeighborListManager;
+import snutella.queryresults.QueryResultItem;
 import snutella.queryresults.QueryResultsManager;
 
 import java.net.UnknownHostException;
@@ -164,6 +165,13 @@ public class Node {
                         n.getPort());
 
             });
+    }
+
+    public void download(QueryResultItem queryResult) {
+        FileDownloader downloader = new FileDownloader(
+                queryResult.getAddress(), queryResult.getPort(),
+                queryResult.getFilename());
+        downloader.start();
     }
     public void stop() {
         try {
