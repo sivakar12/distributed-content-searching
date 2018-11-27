@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.stream.Collectors;
 
 public class BSSClient {
 
@@ -64,7 +65,8 @@ public class BSSClient {
                 System.err.println(e);
             }
         }
-        return neighbors;
+        return neighbors.stream().limit(2).collect(Collectors.toList());
+//        return neighbors;
     }
 
     public void unregister(InetAddress address, int port, String username)
