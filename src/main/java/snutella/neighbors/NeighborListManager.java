@@ -1,5 +1,6 @@
 package snutella.neighbors;
 
+import snutella.Configuration;
 import snutella.neighbors.Neighbor;
 
 import java.util.ArrayList;
@@ -9,8 +10,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class NeighborListManager implements NeighborChangeListener {
-    private final static int MAX_CONNECTIONS = 4;
-    private final static int MAX_TIME_WITHOUT_PING = 30 * 1000;
 
     private List<Neighbor> neighbors;
     private List<NeighborListListener> listeners;
@@ -23,7 +22,7 @@ public class NeighborListManager implements NeighborChangeListener {
             while (true) {
                 this.refreshConnections();
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(Configuration.NEIGHBOR_LIST_REFRESH_RATE);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -63,14 +62,14 @@ public class NeighborListManager implements NeighborChangeListener {
 
     public void refreshConnections() {
         long numberOfConnections = getNumberOfConnections();
-        if (numberOfConnections > MAX_CONNECTIONS) {
-            long numberToDisconnect = numberOfConnections - MAX_CONNECTIONS;
+        if (numberOfConnections > Configuration.MAX_CONNECTIONS) {
+            long numberToDisconnect = numberOfConnections - Configuration.MAX_CONNECTIONS;
             this.neighbors.stream()
                     .filter(n -> n.getIsConnected())
                     .limit(numberToDisconnect)
                     .forEach(neighbor -> neighbor.setIsConnected(false));
-        } else if (numberOfConnections < MAX_CONNECTIONS) {
-            long numberToConnect = MAX_CONNECTIONS - numberOfConnections;
+        } else if (numberOfConnections < Configuration.MAX_CONNECTIONS) {
+            long numberToConnect = Configuration.MAX_CONNECTIONS - numberOfConnections;
             this.neighbors.stream()
                     .filter(n -> !n.getIsConnected())
                     .limit(numberToConnect)
@@ -79,7 +78,7 @@ public class NeighborListManager implements NeighborChangeListener {
         Date currentTime = new Date();
         List<Neighbor> inactiveNeighbors = this.neighbors.stream().filter(n -> {
             long difference = currentTime.getTime() - n.getLastPing().getTime();
-            return difference > MAX_TIME_WITHOUT_PING;
+            return difference > Configuration.MAX_INTERVAL_BETWEEN_PINGS;
         }).collect(Collectors.toList());
         for (Neighbor n: inactiveNeighbors) {
             this.neighbors.remove(n);
@@ -87,7 +86,7 @@ public class NeighborListManager implements NeighborChangeListener {
         this.notifyListeners();
     }
     public void disconnectOne() {
-        if (this.neighbors.size() < MAX_CONNECTIONS) {
+        if (this.neighbors.size() < Configuration.MAX_CONNECTIONS) {
             return;
         }
         Optional<Neighbor> match = this.neighbors.stream()

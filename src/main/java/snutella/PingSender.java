@@ -13,9 +13,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class PingSender extends Thread {
-    private static final int DELAY = 0;
-    private static final int PERIOD = 10000;
-    private static final int DEFAULT_TTL = 3;
 
     private SocketManager socketManager;
     private NeighborListManager neighborListManager;
@@ -39,7 +36,7 @@ public class PingSender extends Thread {
             int port = neighbor.getPort();
 
             Ping ping = new Ping(this.socketManager.getAddress(),
-                this.socketManager.getPort(), DEFAULT_TTL);
+                this.socketManager.getPort(), Configuration.PING_HOPS);
 
             LogMessage logMessage = new LogMessage(false, LogMessageType.PING,
                     this.socketManager.getAddress(), this.socketManager.getPort(),
@@ -61,6 +58,6 @@ public class PingSender extends Thread {
             public void run() {
                 sendPingToConnectedPeers();
             }
-        }, DELAY, PERIOD);
+        }, 0, Configuration.PING_INTERVAL);
     }
 }
