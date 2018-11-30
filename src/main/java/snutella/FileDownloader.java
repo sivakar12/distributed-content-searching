@@ -38,12 +38,11 @@ public class FileDownloader extends Thread {
 
             OutputStream fileOutputStream = new FileOutputStream(outputFile);
 
-            int in;
             byte[] buffer = new byte[8 * 1024];
 
-            while ((in = socketInputStream.read(buffer)) > 0) {
-                System.out.println(new String(buffer));
-                fileOutputStream.write(buffer);
+            int bytesRead;
+            while ((bytesRead = socketInputStream.read(buffer)) > 0) {
+                fileOutputStream.write(buffer, 0, bytesRead);
             }
             fileOutputStream.close();
             socketInputStream.close();
