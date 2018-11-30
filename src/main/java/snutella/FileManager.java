@@ -3,6 +3,7 @@ package snutella;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,8 +57,11 @@ public class FileManager {
             try {
                 File file = new File(FILE_DIRECTORY, filename);
                 file.createNewFile();
-                FileOutputStream fileOut = new FileOutputStream(file);
-                fileOut.write(filename.getBytes());
+                Random random = new Random();
+                int fileSize = 2 * 1024 * 1024 + random.nextInt(8 * 1024 * 1024);
+                RandomAccessFile randomAccessFile =
+                        new RandomAccessFile(file, "rw");   // Code from Thuvarakan
+                randomAccessFile.setLength(fileSize);
             } catch (IOException e) {
                 e.printStackTrace();
             }
