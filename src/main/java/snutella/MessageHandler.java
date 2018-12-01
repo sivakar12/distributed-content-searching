@@ -7,6 +7,8 @@ import snutella.messages.*;
 import snutella.neighbors.Neighbor;
 import snutella.neighbors.NeighborListManager;
 import snutella.queryresults.QueryResultsManager;
+import snutella.stats.HopCountLogger;
+import snutella.stats.ResponseTimeLogger;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -118,13 +120,18 @@ public class MessageHandler extends Thread {
 
         List<String> results = this.fileManager.search(query.getFilename());
         if (results.size() > 0) {
+            HopCountLogger.getInstance().logHops(query.getSourceAddress(),
+                    query.getSourcePort(), socketManager.getAddress(),
+                    socketManager.getPort(), query.getFilename(), query.getHops());
             QueryResponse response = new QueryResponse(this.socketManager.getAddress(),
                     FileServer.getInstance().getServingPort(), query.getHops(), results);
+
             LogMessage queryResponseLog = new LogMessage(false, LogMessageType.QUERY_RESPOSNE,
                     this.socketManager.getAddress(), this.socketManager.getPort(),
                     query.getSourceAddress(), query.getSourcePort(), new Date(),
                     response.toString());
             this.logsManager.log(queryResponseLog);
+
             this.socketManager.sendMessage(response.toString(), query.getSourceAddress(),
                     query.getSourcePort());
         }
