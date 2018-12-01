@@ -147,6 +147,14 @@ public class MessageHandler extends Thread {
         logsManager.log(log);
 
         QueryResponse queryResponse = QueryResponse.fromString(responseMessage);
+
+        ResponseTimeLogger responseTimeLogger = ResponseTimeLogger.getInstance();
+        queryResponse.getItems().forEach(queryResult -> {
+            responseTimeLogger.logResponse(socketManager.getAddress(),
+                    socketManager.getPort(), queryResponse.getAddress(),
+                    queryResponse.getPort(), new Date(), queryResult.getFilename());
+        });
+
         QueryResultsManager.getInstance().addItems(queryResponse.getItems());
         System.out.println("Response for search: " + responseMessage);
     }

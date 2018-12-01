@@ -10,6 +10,7 @@ import snutella.neighbors.Neighbor;
 import snutella.neighbors.NeighborListManager;
 import snutella.queryresults.QueryResultItem;
 import snutella.queryresults.QueryResultsManager;
+import snutella.stats.ResponseTimeLogger;
 
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -153,6 +154,9 @@ public class Node {
     public void sendQuery(String queryString) {
         queryResultsManager.reset();
         Query query = new Query(this.getAddress(), this.getPort(), queryString);
+
+        ResponseTimeLogger.getInstance().sendQuery(queryString);
+
         LogsManager logsManager = LogsManager.getInstance();
         this.neighborManager.getNeighbors().stream()
             .filter(n -> n.getIsConnected())
@@ -161,6 +165,7 @@ public class Node {
                         this.getAddress(), this.getPort(), n.getAddress(),
                         n.getPort(), new Date(), query.toString());
                 logsManager.log(log);
+
                 this.socketManager.sendMessage(query.toString(), n.getAddress(),
                         n.getPort());
 

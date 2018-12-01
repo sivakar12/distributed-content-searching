@@ -63,4 +63,12 @@ public class QueryResponse {
                         this.address, this.port, filename))
                 .collect(Collectors.toList());
     }
+
+    public InetAddress getAddress() {
+        return address;
+    }
+
+    public int getPort() {
+        return port;
+    }
 }
